@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"net/url"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,8 +11,46 @@ type Booking struct {
 	slotID         uuid.UUID
 	userID         uuid.UUID
 	status         BookingStatus
-	conferenceLink url.URL
-	createdAt      time.Time
+	conferenceLink *string
+	createdAt      *time.Time
+}
+
+type BookingRestoreSpecs struct {
+	ID             uuid.UUID
+	SlotID         uuid.UUID
+	UserID         uuid.UUID
+	Status         BookingStatus
+	ConferenceLink *string
+	CreatedAt      *time.Time
+}
+
+type Option func(*Booking)
+
+func NewBooking(opts ...Option) *Booking {
+	b := &Booking{}
+
+	for _, opt := range opts {
+		opt(b)
+	}
+
+	return b
+}
+
+func WithBookingRestoreSpecs(sp *BookingRestoreSpecs) Option {
+	return func(b *Booking) {
+		b.id = sp.ID
+		b.slotID = sp.SlotID
+		b.userID = sp.UserID
+		b.status = sp.Status
+
+		if sp.ConferenceLink != nil {
+			b.conferenceLink = sp.ConferenceLink
+		}
+
+		if sp.CreatedAt != nil {
+			b.createdAt = sp.CreatedAt
+		}
+	}
 }
 
 func (b *Booking) ID() uuid.UUID {
@@ -37,9 +74,9 @@ const (
 	CancelledBookingStatus BookingStatus = "cancelled"
 )
 
-func (b *Booking) ConferenceLink() url.URL {
+func (b *Booking) ConferenceLink() *string {
 	return b.conferenceLink
 }
-func (b *Booking) CreatedAt() time.Time {
+func (b *Booking) CreatedAt() *time.Time {
 	return b.createdAt
 }

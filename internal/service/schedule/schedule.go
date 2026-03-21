@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/google/uuid"
 )
 
@@ -21,14 +22,14 @@ type Service struct {
 }
 
 type Config struct {
-	roomRepo     RoomRepository
-	scheduleRepo Repository
+	roomRepo RoomRepository
+	repo     Repository
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
 		roomRepo: c.roomRepo,
-		repo:     c.scheduleRepo,
+		repo:     c.repo,
 	}
 }
 func (s *Service) Create(schedule *domain.Schedule) (*domain.Schedule, error) {
@@ -38,7 +39,7 @@ func (s *Service) Create(schedule *domain.Schedule) (*domain.Schedule, error) {
 	}
 
 	if !roomExists {
-		return nil, fmt.Errorf("room %s does not exist", schedule.RoomID())
+		return nil, errs.ErrRoomNotExists
 	}
 
 	createdSchedule, err := s.repo.Create(schedule)
