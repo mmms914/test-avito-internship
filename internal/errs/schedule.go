@@ -1,7 +1,9 @@
 package errs
 
-import "errors"
+const (
+	ValidationErrorCode string = "VALIDATION_ERROR"
+)
 
 var (
-	ErrDayIsInvalid = errors.New("day should be between 1 and 7")
+	ErrDayIsInvalid = NewCustomError(ValidationErrorCode, "day should be between 1 and 7")
 )

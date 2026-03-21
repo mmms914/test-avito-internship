@@ -8,11 +8,11 @@ import (
 )
 
 type Schedule struct {
-	ID         uuid.UUID
-	RoomID     uuid.UUID
-	DaysOfWeek []Day
-	StartTime  time.Time
-	EndTime    time.Time
+	id         uuid.UUID
+	roomID     uuid.UUID
+	daysOfWeek []Day
+	startTime  time.Time
+	endTime    time.Time
 }
 
 type Day int
@@ -50,4 +50,20 @@ func DayFromInt(d int) (Day, error) {
 	default:
 		return -1, errs.ErrDayIsInvalid
 	}
+}
+
+func (s *Schedule) ID() uuid.UUID {
+	return s.id
+}
+func (s *Schedule) RoomID() uuid.UUID {
+	return s.roomID
+}
+func (s *Schedule) DaysOfWeek() []Day {
+	return s.daysOfWeek
+}
+func (s *Schedule) StartTime() time.Time {
+	return s.startTime
+}
+func (s *Schedule) EndTime() time.Time {
+	return s.endTime
 }

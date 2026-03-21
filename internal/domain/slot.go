@@ -7,8 +7,21 @@ import (
 )
 
 type Slot struct {
-	ID        uuid.UUID
-	RoomID    uuid.UUID
-	StartTime time.Time
-	EndTime   time.Time
+	id        uuid.UUID
+	roomID    uuid.UUID
+	startTime time.Time
+	endTime   time.Time
+}
+
+func (s *Slot) ID() uuid.UUID {
+	return s.id
+}
+func (s *Slot) RoomID() uuid.UUID {
+	return s.roomID
+}
+func (s *Slot) StartTime() time.Time {
+	return s.startTime
+}
+func (s *Slot) EndTime() time.Time {
+	return s.endTime
 }
