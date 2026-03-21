@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,4 +37,25 @@ func (u *User) CreatedAt() time.Time {
 
 func (u *User) IsAdmin() bool {
 	return u.role == AdminRole
+}
+
+type UserAuth struct {
+	ID   uuid.UUID
+	Role Role
+}
+
+func GetCredentialsFromContext(ctx context.Context) (*UserAuth, error) {
+	userID, ok := ctx.Value("userID").(uuid.UUID)
+	if !ok {
+		return nil, errors.New("userID not found in context")
+	}
+
+	userRole, ok := ctx.Value("role").(Role)
+	if !ok {
+		return nil, errors.New("role not found in context")
+	}
+	return &UserAuth{
+		ID:   userID,
+		Role: userRole,
+	}, nil
 }

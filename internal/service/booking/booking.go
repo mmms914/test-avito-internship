@@ -1,6 +1,7 @@
 package booking
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -12,24 +13,24 @@ import (
 )
 
 type Repository interface {
-	GetByID(bookingID uuid.UUID) (*domain.Booking, error)
-	Create(booking *domain.Booking) (*domain.Booking, error)
-	List(filter *dto.BookingFilter) (*domain.Booking, error)
-	Update(bum *dto.BookingUpdateModel) (*domain.Booking, error)
+	GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.Booking, error)
+	Create(ctx context.Context, booking *domain.Booking) (*domain.Booking, error)
+	List(ctx context.Context, filter *dto.BookingFilter) (*domain.Booking, error)
+	Update(ctx context.Context, bum *dto.BookingUpdateModel) (*domain.Booking, error)
 }
 
 //nolint:iface // interfaces has different ways for development
 type SlotRepository interface {
-	Exists(slotID uuid.UUID) (bool, error)
+	Exists(ctx context.Context, slotID uuid.UUID) (bool, error)
 }
 
 //nolint:iface // interfaces has different ways for development
 type UserRepository interface {
-	Exists(userID uuid.UUID) (bool, error)
+	Exists(ctx context.Context, userID uuid.UUID) (bool, error)
 }
 
 type LinkManager interface {
-	Create() (string, error)
+	Create(ctx context.Context) (string, error)
 }
 
 type Service struct {
@@ -55,8 +56,17 @@ func NewService(c *Config) *Service {
 	}
 }
 
-func (s *Service) Create(booking *dto.BookingCreateModel, userID uuid.UUID) (*domain.Booking, error) {
-	slotExists, err := s.slotRepo.Exists(booking.SlotID)
+func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (*domain.Booking, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
+	}
+
+	if creds.Role != domain.UserRole {
+		return nil, errs.ErrForbidden
+	}
+
+	slotExists, err := s.slotRepo.Exists(ctx, booking.SlotID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if slot exists: %w", err)
 	}
@@ -65,7 +75,7 @@ func (s *Service) Create(booking *dto.BookingCreateModel, userID uuid.UUID) (*do
 		return nil, errs.ErrSlotNotFound
 	}
 
-	userExists, err := s.userRepo.Exists(userID)
+	userExists, err := s.userRepo.Exists(ctx, creds.ID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if user exists: %w", err)
 	}
@@ -76,7 +86,7 @@ func (s *Service) Create(booking *dto.BookingCreateModel, userID uuid.UUID) (*do
 
 	var conferenceLink *string
 	if booking.CreateConferenceLink != nil && *booking.CreateConferenceLink {
-		cLink, err := s.linkManager.Create()
+		cLink, err := s.linkManager.Create(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("creating conference link: %w", err)
 		}
@@ -84,36 +94,33 @@ func (s *Service) Create(booking *dto.BookingCreateModel, userID uuid.UUID) (*do
 		conferenceLink = &cLink
 	}
 
-	createdBooking, err := s.repo.Create(domain.NewBooking(domain.WithBookingRestoreSpecs(
+	createdBooking, err := s.repo.Create(ctx, domain.NewBooking(domain.WithBookingRestoreSpecs(
 		&domain.BookingRestoreSpecs{
 			ID:             uuid.New(),
 			SlotID:         booking.SlotID,
-			UserID:         userID,
+			UserID:         creds.ID,
 			Status:         domain.ActiveBookingStatus,
 			ConferenceLink: conferenceLink,
 			CreatedAt:      ptr.To(time.Now().UTC()),
 		})))
 	if err != nil {
-		// TODO: cancel conference for link
 		return nil, fmt.Errorf("creating booking: %w", err)
 	}
 
 	return createdBooking, nil
 }
 
-func (s *Service) List(filter *dto.BookingFilter) (*domain.Booking, error) {
-	if filter.UserID != nil {
-		userExists, err := s.userRepo.Exists(*filter.UserID)
-		if err != nil {
-			return nil, fmt.Errorf("checking if user exists: %w", err)
-		}
-
-		if !userExists {
-			return nil, errs.ErrUserNotFound
-		}
+func (s *Service) List(ctx context.Context, filter *dto.BookingFilter) (*domain.Booking, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
 	}
 
-	bookings, err := s.repo.List(filter)
+	if creds.Role != domain.AdminRole {
+		return nil, errs.ErrForbidden
+	}
+
+	bookings, err := s.repo.List(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("listing bookings: %w", err)
 	}
@@ -121,21 +128,21 @@ func (s *Service) List(filter *dto.BookingFilter) (*domain.Booking, error) {
 	return bookings, nil
 }
 
-func (s *Service) ListForUser(userID uuid.UUID) (*domain.Booking, error) {
-	userExists, err := s.userRepo.Exists(userID)
+func (s *Service) ListForUser(ctx context.Context) (*domain.Booking, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("checking if user exists: %w", err)
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
 	}
 
-	if !userExists {
-		return nil, errs.ErrUserNotFound
+	if creds.Role != domain.UserRole {
+		return nil, errs.ErrForbidden
 	}
 
 	filter := &dto.BookingFilter{
-		UserID: &userID,
+		UserID: &creds.ID,
 	}
 
-	bookings, err := s.repo.List(filter)
+	bookings, err := s.repo.List(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("listing bookings: %w", err)
 	}
@@ -143,22 +150,31 @@ func (s *Service) ListForUser(userID uuid.UUID) (*domain.Booking, error) {
 	return bookings, nil
 }
 
-func (s *Service) Cancel(bookingID uuid.UUID, userID uuid.UUID) (*domain.Booking, error) {
-	booking, err := s.repo.GetByID(bookingID)
+func (s *Service) Cancel(ctx context.Context, bookingID uuid.UUID) (*domain.Booking, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
+	}
+
+	if creds.Role != domain.UserRole {
+		return nil, errs.ErrForbidden
+	}
+
+	booking, err := s.repo.GetByID(ctx, bookingID)
 	if err != nil {
 		return nil, fmt.Errorf("getting booking: %w", err)
 	}
 
-	if booking.UserID() != userID {
+	if booking.UserID() != creds.ID {
 		return nil, errs.ErrForbidden
 	}
 
 	model := &dto.BookingUpdateModel{
 		ID:     booking.UserID(),
-		Status: booking.Status(),
+		Status: domain.CancelledBookingStatus,
 	}
 
-	updatedBooking, err := s.repo.Update(model)
+	updatedBooking, err := s.repo.Update(ctx, model)
 	if err != nil {
 		return nil, fmt.Errorf("updating booking: %w", err)
 	}

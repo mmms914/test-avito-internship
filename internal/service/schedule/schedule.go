@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
@@ -9,11 +10,11 @@ import (
 )
 
 type RoomRepository interface {
-	Exists(roomID uuid.UUID) (bool, error)
+	Exists(ctx context.Context, roomID uuid.UUID) (bool, error)
 }
 
 type Repository interface {
-	Create(schedule *domain.Schedule) (*domain.Schedule, error)
+	Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error)
 }
 
 type Service struct {
@@ -32,8 +33,17 @@ func NewService(c *Config) *Service {
 		repo:     c.repo,
 	}
 }
-func (s *Service) Create(schedule *domain.Schedule) (*domain.Schedule, error) {
-	roomExists, err := s.roomRepo.Exists(schedule.RoomID())
+func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
+	}
+
+	if creds.Role != domain.AdminRole {
+		return nil, errs.ErrForbidden
+	}
+
+	roomExists, err := s.roomRepo.Exists(ctx, schedule.RoomID())
 	if err != nil {
 		return nil, fmt.Errorf("checking if room exists: %w", err)
 	}
@@ -42,7 +52,7 @@ func (s *Service) Create(schedule *domain.Schedule) (*domain.Schedule, error) {
 		return nil, errs.ErrRoomNotExists
 	}
 
-	createdSchedule, err := s.repo.Create(schedule)
+	createdSchedule, err := s.repo.Create(ctx, schedule)
 	if err != nil {
 		return nil, fmt.Errorf("creating schedule: %w", err)
 	}

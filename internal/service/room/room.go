@@ -1,14 +1,16 @@
 package room
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 )
 
 type Repository interface {
-	GetAll() ([]*domain.Room, error)
-	Create(room *domain.Room) (*domain.Room, error)
+	GetAll(ctx context.Context) ([]*domain.Room, error)
+	Create(ctx context.Context, room *domain.Room) (*domain.Room, error)
 }
 
 type Service struct {
@@ -19,8 +21,8 @@ func NewService(repo Repository) *Service {
 	return &Service{repo}
 }
 
-func (s *Service) GetAll() ([]*domain.Room, error) {
-	rooms, err := s.repo.GetAll()
+func (s *Service) GetAll(ctx context.Context) ([]*domain.Room, error) {
+	rooms, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("getting all rooms: %w", err)
 	}
@@ -28,8 +30,17 @@ func (s *Service) GetAll() ([]*domain.Room, error) {
 	return rooms, nil
 }
 
-func (s *Service) Create(room *domain.Room) (*domain.Room, error) {
-	createdRoom, err := s.repo.Create(room)
+func (s *Service) Create(ctx context.Context, room *domain.Room) (*domain.Room, error) {
+	creds, err := domain.GetCredentialsFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
+	}
+
+	if creds.Role != domain.AdminRole {
+		return nil, errs.ErrForbidden
+	}
+
+	createdRoom, err := s.repo.Create(ctx, room)
 	if err != nil {
 		return nil, fmt.Errorf("creating room: %w", err)
 	}

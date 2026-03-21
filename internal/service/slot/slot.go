@@ -1,6 +1,7 @@
 package slot
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -11,11 +12,11 @@ import (
 )
 
 type Repository interface {
-	GetAllAvailable(f *dto.SlotFilter) ([]*domain.Slot, error)
+	GetAllAvailable(ctx context.Context, f *dto.SlotFilter) ([]*domain.Slot, error)
 }
 
 type RoomRepository interface {
-	Exists(slotID uuid.UUID) (bool, error)
+	Exists(ctx context.Context, slotID uuid.UUID) (bool, error)
 }
 
 type Service struct {
@@ -35,8 +36,8 @@ func NewService(c *Config) *Service {
 	}
 }
 
-func (s *Service) GetAvailableSlots(roomID uuid.UUID, date time.Time) ([]*domain.Slot, error) {
-	roomExists, err := s.roomRepo.Exists(roomID)
+func (s *Service) GetAvailableSlots(ctx context.Context, roomID uuid.UUID, date time.Time) ([]*domain.Slot, error) {
+	roomExists, err := s.roomRepo.Exists(ctx, roomID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if room exists: %w", err)
 	}
@@ -50,7 +51,7 @@ func (s *Service) GetAvailableSlots(roomID uuid.UUID, date time.Time) ([]*domain
 		Date:   date,
 	}
 
-	slots, err := s.repo.GetAllAvailable(filter)
+	slots, err := s.repo.GetAllAvailable(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("getting available slots: %w", err)
 	}
