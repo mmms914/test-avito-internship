@@ -1,9 +1,10 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/google/uuid"
-	"time"
 )
 
 type Schedule struct {
