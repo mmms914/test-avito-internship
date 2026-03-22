@@ -18,7 +18,10 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
 )
 
-var errInternal = errors.New("internal error")
+var (
+	errInternal      = errors.New("internal error")
+	errOtherInternal = errors.New("other internal error")
+)
 
 type testMocks struct {
 	repo        *mocks.Repository
@@ -201,7 +204,7 @@ func TestService_Create(t *testing.T) {
 			},
 			expectedError: errInternal,
 		},
-		"error creating booking in repo": {
+		"error creating booking in repo, cancelling of conference is success": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
 				domain.UserIDKey, uuid.UUID{}),
 			model: &dto.BookingCreateModel{
@@ -228,6 +231,45 @@ func TestService_Create(t *testing.T) {
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
 					Return(nil, errInternal).
+					Once()
+				m.linkManager.
+					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
+					Return(nil).
+					Once()
+			},
+			expectedError: errInternal,
+		},
+		"error creating booking in repo, cancelling of conference is NOT success": {
+			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
+				domain.UserIDKey, uuid.UUID{}),
+			model: &dto.BookingCreateModel{
+				SlotID:               uuid.UUID{},
+				CreateConferenceLink: ptr.To(true),
+			},
+			setupMocks: func(m *testMocks) {
+				m.slotRepo.
+					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(true, nil).
+					Once()
+				m.repo.
+					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(false, nil).
+					Once()
+				m.userRepo.
+					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(true, nil).
+					Once()
+				m.linkManager.
+					On("Create", mock.Anything).
+					Return("link", nil).
+					Once()
+				m.repo.
+					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
+					Return(nil, errInternal).
+					Once()
+				m.linkManager.
+					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
+					Return(errOtherInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -518,6 +560,34 @@ func TestService_Cancel(t *testing.T) {
 			},
 			expectedError: errs.ErrForbidden,
 		},
+		"error cancelling conference, other is good": {
+			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
+				domain.UserIDKey, uuid.UUID{}),
+			bookingID: uuid.UUID{},
+			setupMocks: func(m *testMocks) {
+				m.repo.
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewBooking(domain.WithBookingRestoreSpecs(
+						&domain.BookingRestoreSpecs{
+							ID:             uuid.UUID{},
+							SlotID:         uuid.UUID{},
+							UserID:         uuid.UUID{},
+							Status:         domain.ActiveBookingStatus,
+							ConferenceLink: ptr.To("link"),
+							CreatedAt:      ptr.To(time.Now().UTC()),
+						})), nil).
+					Once()
+				m.linkManager.
+					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
+					Return(errOtherInternal).
+					Once()
+				m.repo.
+					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
+					Return(&domain.Booking{}, nil).
+					Once()
+			},
+			expectedError: nil,
+		},
 		"error updating booking": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
 				domain.UserIDKey, uuid.UUID{}),
@@ -575,14 +645,18 @@ func TestService_Cancel(t *testing.T) {
 					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(domain.NewBooking(domain.WithBookingRestoreSpecs(
 						&domain.BookingRestoreSpecs{
-							ID:        uuid.UUID{},
-							SlotID:    uuid.UUID{},
-							UserID:    uuid.UUID{},
-							Status:    domain.CancelledBookingStatus,
-							CreatedAt: ptr.To(time.Now().UTC()),
+							ID:             uuid.UUID{},
+							SlotID:         uuid.UUID{},
+							UserID:         uuid.UUID{},
+							Status:         domain.CancelledBookingStatus,
+							ConferenceLink: ptr.To("link"),
+							CreatedAt:      ptr.To(time.Now().UTC()),
 						})), nil).
 					Once()
-
+				m.linkManager.
+					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
+					Return(nil).
+					Once()
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
 					Return(&domain.Booking{}, nil).

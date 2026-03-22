@@ -13,6 +13,24 @@ type LinkManager struct {
 	mock.Mock
 }
 
+// Cancel provides a mock function with given fields: ctx, link
+func (_m *LinkManager) Cancel(ctx context.Context, link string) error {
+	ret := _m.Called(ctx, link)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Cancel")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, link)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Create provides a mock function with given fields: ctx
 func (_m *LinkManager) Create(ctx context.Context) (string, error) {
 	ret := _m.Called(ctx)

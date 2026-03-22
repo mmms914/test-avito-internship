@@ -16,9 +16,9 @@ type Repository struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: ctx, schedule
-func (_m *Repository) Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error) {
-	ret := _m.Called(ctx, schedule)
+// Create provides a mock function with given fields: ctx, _a1
+func (_m *Repository) Create(ctx context.Context, _a1 *domain.Schedule) (*domain.Schedule, error) {
+	ret := _m.Called(ctx, _a1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
@@ -27,10 +27,10 @@ func (_m *Repository) Create(ctx context.Context, schedule *domain.Schedule) (*d
 	var r0 *domain.Schedule
 	var r1 error
 	if rf, ok := ret.Get(0).(func(context.Context, *domain.Schedule) (*domain.Schedule, error)); ok {
-		return rf(ctx, schedule)
+		return rf(ctx, _a1)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, *domain.Schedule) *domain.Schedule); ok {
-		r0 = rf(ctx, schedule)
+		r0 = rf(ctx, _a1)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Schedule)
@@ -38,7 +38,7 @@ func (_m *Repository) Create(ctx context.Context, schedule *domain.Schedule) (*d
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, *domain.Schedule) error); ok {
-		r1 = rf(ctx, schedule)
+		r1 = rf(ctx, _a1)
 	} else {
 		r1 = ret.Error(1)
 	}
