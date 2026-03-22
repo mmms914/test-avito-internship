@@ -14,6 +14,52 @@ type Room struct {
 	createdAt   time.Time
 }
 
+type RoomInitSpecs struct {
+	Name        string
+	Description string
+	Capacity    int
+}
+
+type RoomRestoreSpecs struct {
+	Id          uuid.UUID
+	Name        string
+	Description string
+	Capacity    int
+	CreatedAt   time.Time
+}
+
+func NewRoom(opts ...RoomOption) *Room {
+	r := &Room{}
+
+	for _, opt := range opts {
+		opt(r)
+	}
+
+	return r
+}
+
+func WithRoomInitSpecs(sp *RoomInitSpecs) RoomOption {
+	return func(r *Room) {
+		r.id = uuid.New()
+		r.name = sp.Name
+		r.description = sp.Description
+		r.capacity = sp.Capacity
+		r.createdAt = time.Now()
+	}
+}
+
+func WithRoomRestoreSpecs(sp *RoomRestoreSpecs) RoomOption {
+	return func(r *Room) {
+		r.id = sp.Id
+		r.name = sp.Name
+		r.description = sp.Description
+		r.capacity = sp.Capacity
+		r.createdAt = sp.CreatedAt
+	}
+}
+
+type RoomOption func(*Room)
+
 func (room *Room) ID() uuid.UUID {
 	return room.id
 }

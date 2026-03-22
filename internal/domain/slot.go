@@ -1,9 +1,15 @@
 package domain
 
 import (
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
+)
+
+const (
+	SlotDuration = 30 * time.Minute
+	DayDuration  = 24 * time.Hour
 )
 
 type Slot struct {
@@ -11,6 +17,18 @@ type Slot struct {
 	roomID    uuid.UUID
 	startTime time.Time
 	endTime   time.Time
+}
+
+type SlotInitSpecs struct {
+	RoomID    uuid.UUID
+	StartTime time.Time
+	EndTime   time.Time
+}
+type SlotRestoreSpecs struct {
+	ID        uuid.UUID
+	RoomID    uuid.UUID
+	StartTime time.Time
+	EndTime   time.Time
 }
 
 func NewSlot(opts ...SlotOption) *Slot {
@@ -23,6 +41,15 @@ func NewSlot(opts ...SlotOption) *Slot {
 	return s
 }
 
+func WithSlotInitSpecs(sp *SlotInitSpecs) SlotOption {
+	return func(s *Slot) {
+		s.id = uuid.New()
+		s.roomID = sp.RoomID
+		s.startTime = sp.StartTime
+		s.endTime = sp.EndTime
+	}
+}
+
 func WithSlotRestoreSpecs(sp *SlotRestoreSpecs) SlotOption {
 	return func(s *Slot) {
 		s.id = sp.ID
@@ -30,13 +57,6 @@ func WithSlotRestoreSpecs(sp *SlotRestoreSpecs) SlotOption {
 		s.startTime = sp.StartTime
 		s.endTime = sp.EndTime
 	}
-}
-
-type SlotRestoreSpecs struct {
-	ID        uuid.UUID
-	RoomID    uuid.UUID
-	StartTime time.Time
-	EndTime   time.Time
 }
 
 type SlotOption func(*Slot)
@@ -56,4 +76,24 @@ func (s *Slot) EndTime() time.Time {
 
 func (s *Slot) IsInPast() bool {
 	return s.startTime.Before(time.Now())
+}
+
+func GenerateSlots(schedule *Schedule, date time.Time) []*Slot {
+	slots := make([]*Slot, 0)
+
+	if slices.Contains(schedule.DaysOfWeek(), date.Weekday()) {
+		beginTime := date.UTC().Truncate(DayDuration).Add(schedule.startTime)
+		slotsPerDay := int((schedule.endTime - schedule.startTime) / SlotDuration)
+
+		for slotNumber := range slotsPerDay {
+			slots = append(slots, &Slot{
+				id:        uuid.New(),
+				roomID:    schedule.roomID,
+				startTime: beginTime.Add(time.Duration(slotNumber) * SlotDuration),
+				endTime:   beginTime.Add(time.Duration(slotNumber) * SlotDuration).Add(SlotDuration),
+			})
+		}
+	}
+
+	return slots
 }

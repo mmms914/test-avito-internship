@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
 )
 
 type Booking struct {
@@ -15,6 +17,13 @@ type Booking struct {
 	createdAt      *time.Time
 }
 
+type BookingInitSpecs struct {
+	SlotID         uuid.UUID
+	UserID         uuid.UUID
+	Status         BookingStatus
+	ConferenceLink *string
+}
+
 type BookingRestoreSpecs struct {
 	ID             uuid.UUID
 	SlotID         uuid.UUID
@@ -23,6 +32,13 @@ type BookingRestoreSpecs struct {
 	ConferenceLink *string
 	CreatedAt      *time.Time
 }
+
+type BookingStatus string
+
+const (
+	ActiveBookingStatus    BookingStatus = "active"
+	CancelledBookingStatus BookingStatus = "cancelled"
+)
 
 type BookingOption func(*Booking)
 
@@ -34,6 +50,21 @@ func NewBooking(opts ...BookingOption) *Booking {
 	}
 
 	return b
+}
+
+func WithBookingInitSpecs(sp *BookingInitSpecs) BookingOption {
+	return func(b *Booking) {
+		b.id = uuid.New()
+		b.slotID = sp.SlotID
+		b.userID = sp.UserID
+		b.status = sp.Status
+		b.createdAt = ptr.To(time.Now().UTC())
+
+		if sp.ConferenceLink != nil {
+			b.conferenceLink = sp.ConferenceLink
+		}
+
+	}
 }
 
 func WithBookingRestoreSpecs(sp *BookingRestoreSpecs) BookingOption {
@@ -62,18 +93,9 @@ func (b *Booking) SlotID() uuid.UUID {
 func (b *Booking) UserID() uuid.UUID {
 	return b.userID
 }
-
 func (b *Booking) Status() BookingStatus {
 	return b.status
 }
-
-type BookingStatus string
-
-const (
-	ActiveBookingStatus    BookingStatus = "active"
-	CancelledBookingStatus BookingStatus = "cancelled"
-)
-
 func (b *Booking) ConferenceLink() *string {
 	return b.conferenceLink
 }
