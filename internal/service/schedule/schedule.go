@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/google/uuid"
 )
 
 type RoomRepository interface {

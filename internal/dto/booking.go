@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/google/uuid"
+
+	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 )
 
 type BookingFilter struct {

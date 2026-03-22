@@ -36,7 +36,7 @@ formatters:
       # with the given prefixes are grouped after 3rd-party packages.
       # Default: []
       local-prefixes:
-        - github.com/my/project
+        - github.com/avito-internships/test-backend-1-mmms914
 
     golines:
       # Target maximum line length.

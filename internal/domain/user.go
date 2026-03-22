@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/google/uuid"
+
+	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 )
 
 type User struct {

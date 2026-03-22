@@ -5,13 +5,14 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/room"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/room/mocks"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 var errInternal = errors.New("internal error")
