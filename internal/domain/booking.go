@@ -63,7 +63,6 @@ func WithBookingInitSpecs(sp *BookingInitSpecs) BookingOption {
 		if sp.ConferenceLink != nil {
 			b.conferenceLink = sp.ConferenceLink
 		}
-
 	}
 }
 

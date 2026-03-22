@@ -21,7 +21,9 @@ func TestUser_GetCredentialsFromContext(t *testing.T) {
 		expectedRole *domain.Role
 	}{
 		"ID and role": {
-			ctx:          context.WithValue(context.WithValue(context.Background(), domain.UserIDKey, uuid.UUID{}), domain.UserRoleKey, domain.AdminRole),
+			ctx: context.WithValue(
+				context.WithValue(
+					context.Background(), domain.UserIDKey, uuid.UUID{}), domain.UserRoleKey, domain.AdminRole),
 			expectedErr:  false,
 			expectedID:   ptr.To(uuid.UUID{}),
 			expectedRole: ptr.To(domain.AdminRole),
@@ -53,7 +55,8 @@ func TestUser_GetCredentialsFromContext(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		uid := uuid.New()
 
-		ctx := context.WithValue(context.WithValue(context.Background(), domain.UserIDKey, uid), domain.UserRoleKey, domain.AdminRole)
+		ctx := context.WithValue(
+			context.WithValue(context.Background(), domain.UserIDKey, uid), domain.UserRoleKey, domain.AdminRole)
 		auth, err := domain.GetCredentialsFromContext(ctx)
 		require.NoError(t, err)
 
@@ -89,7 +92,7 @@ func TestNewUser_WithRestoreSpecs(t *testing.T) {
 
 	user := domain.NewUser(
 		domain.WithUserRestoreSpecs(&domain.UserRestoreSpecs{
-			Id:           id,
+			ID:           id,
 			Email:        email,
 			PasswordHash: passwordHash,
 			Role:         role,

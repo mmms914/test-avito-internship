@@ -37,7 +37,7 @@ func TestNewRoom_WithRestoreSpecs(t *testing.T) {
 
 	room := domain.NewRoom(
 		domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
-			Id:          id,
+			ID:          id,
 			Name:        name,
 			Description: description,
 			Capacity:    capacity,

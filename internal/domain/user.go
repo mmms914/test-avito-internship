@@ -25,7 +25,7 @@ type UserInitSpecs struct {
 }
 
 type UserRestoreSpecs struct {
-	Id           uuid.UUID
+	ID           uuid.UUID
 	Email        string
 	PasswordHash string
 	Role         Role
@@ -61,7 +61,7 @@ func WithUserInitSpecs(sp *UserInitSpecs) UserOption {
 
 func WithUserRestoreSpecs(sp *UserRestoreSpecs) UserOption {
 	return func(u *User) {
-		u.id = sp.Id
+		u.id = sp.ID
 		u.email = sp.Email
 		u.passwordHash = sp.PasswordHash
 		u.role = sp.Role

@@ -21,7 +21,7 @@ type RoomInitSpecs struct {
 }
 
 type RoomRestoreSpecs struct {
-	Id          uuid.UUID
+	ID          uuid.UUID
 	Name        string
 	Description string
 	Capacity    int
@@ -50,7 +50,7 @@ func WithRoomInitSpecs(sp *RoomInitSpecs) RoomOption {
 
 func WithRoomRestoreSpecs(sp *RoomRestoreSpecs) RoomOption {
 	return func(r *Room) {
-		r.id = sp.Id
+		r.id = sp.ID
 		r.name = sp.Name
 		r.description = sp.Description
 		r.capacity = sp.Capacity
