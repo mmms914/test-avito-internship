@@ -3,6 +3,7 @@ package booking
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,6 +34,7 @@ type UserRepository interface {
 
 type LinkManager interface {
 	Create(ctx context.Context) (string, error)
+	Cancel(ctx context.Context, link string) error
 }
 
 type Service struct {
@@ -115,6 +117,14 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 			CreatedAt:      ptr.To(time.Now().UTC()),
 		})))
 	if err != nil {
+		// компенсирующее действие по удалению созданной ссылки
+		if conferenceLink != nil {
+			cancelErr := s.linkManager.Cancel(ctx, *conferenceLink)
+			if cancelErr != nil {
+				slog.Error("Failed to cancel conference with link %s: %w", *conferenceLink, cancelErr)
+			}
+		}
+
 		return nil, fmt.Errorf("creating booking: %w", err)
 	}
 
@@ -178,6 +188,13 @@ func (s *Service) Cancel(ctx context.Context, bookingID uuid.UUID) (*domain.Book
 
 	if booking.UserID() != creds.ID {
 		return nil, errs.ErrForbidden
+	}
+
+	if booking.ConferenceLink() != nil {
+		cancelErr := s.linkManager.Cancel(ctx, *booking.ConferenceLink())
+		if cancelErr != nil {
+			slog.Error("Failed to cancel conference with link %s: %w", *booking.ConferenceLink(), cancelErr)
+		}
 	}
 
 	model := &dto.BookingUpdateModel{
