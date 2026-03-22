@@ -24,9 +24,9 @@ type BookingRestoreSpecs struct {
 	CreatedAt      *time.Time
 }
 
-type Option func(*Booking)
+type BookingOption func(*Booking)
 
-func NewBooking(opts ...Option) *Booking {
+func NewBooking(opts ...BookingOption) *Booking {
 	b := &Booking{}
 
 	for _, opt := range opts {
@@ -36,7 +36,7 @@ func NewBooking(opts ...Option) *Booking {
 	return b
 }
 
-func WithBookingRestoreSpecs(sp *BookingRestoreSpecs) Option {
+func WithBookingRestoreSpecs(sp *BookingRestoreSpecs) BookingOption {
 	return func(b *Booking) {
 		b.id = sp.ID
 		b.slotID = sp.SlotID

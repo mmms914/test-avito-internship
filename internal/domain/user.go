@@ -2,9 +2,10 @@ package domain
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"time"
 
+	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/google/uuid"
 )
 
@@ -44,15 +45,23 @@ type UserAuth struct {
 	Role Role
 }
 
+type UserIDKeyType string
+type UserRoleKeyType string
+
+const (
+	UserIDKey   UserIDKeyType   = "userID"
+	UserRoleKey UserRoleKeyType = "userRole"
+)
+
 func GetCredentialsFromContext(ctx context.Context) (*UserAuth, error) {
-	userID, ok := ctx.Value("userID").(uuid.UUID)
+	userID, ok := ctx.Value(UserIDKey).(uuid.UUID)
 	if !ok {
-		return nil, errors.New("userID not found in context")
+		return nil, fmt.Errorf("userID not found in context - %w", errs.ErrUnauthorized)
 	}
 
-	userRole, ok := ctx.Value("role").(Role)
+	userRole, ok := ctx.Value(UserRoleKey).(Role)
 	if !ok {
-		return nil, errors.New("role not found in context")
+		return nil, fmt.Errorf("role not found in context - %w", errs.ErrUnauthorized)
 	}
 	return &UserAuth{
 		ID:   userID,

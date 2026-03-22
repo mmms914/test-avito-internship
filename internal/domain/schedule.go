@@ -52,6 +52,36 @@ func DayFromInt(d int) (Day, error) {
 	}
 }
 
+type ScheduleRestoreSpecs struct {
+	ID         uuid.UUID
+	RoomID     uuid.UUID
+	DaysOfWeek []Day
+	StartTime  time.Time
+	EndTime    time.Time
+}
+
+type ScheduleOption func(*Schedule)
+
+func NewSchedule(opts ...ScheduleOption) *Schedule {
+	s := &Schedule{}
+
+	for _, opt := range opts {
+		opt(s)
+	}
+
+	return s
+}
+
+func WithScheduleRestoreSpecs(sp *ScheduleRestoreSpecs) ScheduleOption {
+	return func(s *Schedule) {
+		s.id = sp.ID
+		s.roomID = sp.RoomID
+		s.daysOfWeek = sp.DaysOfWeek
+		s.startTime = sp.StartTime
+		s.endTime = sp.EndTime
+	}
+}
+
 func (s *Schedule) ID() uuid.UUID {
 	return s.id
 }
