@@ -54,9 +54,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
@@ -72,9 +72,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
@@ -90,9 +90,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
@@ -112,9 +112,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
@@ -134,9 +134,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
@@ -160,9 +160,9 @@ func TestService_Create(t *testing.T) {
 			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
 				&domain.ScheduleRestoreSpecs{
 					RoomID:     uuid.UUID{},
-					DaysOfWeek: []domain.Day{domain.Monday, domain.Wednesday, domain.Friday},
-					StartTime:  time.Time{},
-					EndTime:    time.Time{},
+					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+					StartTime:  time.Duration(0),
+					EndTime:    time.Duration(0),
 				})),
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.

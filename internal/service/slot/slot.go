@@ -3,6 +3,7 @@ package slot
 import (
 	"context"
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,6 +15,12 @@ import (
 
 type Repository interface {
 	GetAllAvailable(ctx context.Context, f *dto.SlotFilter) ([]*domain.Slot, error)
+	Create(ctx context.Context, slot []*domain.Slot) error
+	IsSlotsExistForDate(ctx context.Context, date time.Time) (bool, error)
+}
+
+type ScheduleRepository interface {
+	GetForRoom(ctx context.Context, roomID uuid.UUID) (*domain.Schedule, error)
 }
 
 type RoomRepository interface {
@@ -21,19 +28,22 @@ type RoomRepository interface {
 }
 
 type Service struct {
-	repo     Repository
-	roomRepo RoomRepository
+	repo         Repository
+	scheduleRepo ScheduleRepository
+	roomRepo     RoomRepository
 }
 
 type Config struct {
-	Repo     Repository
-	RoomRepo RoomRepository
+	Repo         Repository
+	ScheduleRepo ScheduleRepository
+	RoomRepo     RoomRepository
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
-		repo:     c.Repo,
-		roomRepo: c.RoomRepo,
+		repo:         c.Repo,
+		scheduleRepo: c.ScheduleRepo,
+		roomRepo:     c.RoomRepo,
 	}
 }
 
@@ -45,6 +55,25 @@ func (s *Service) GetAvailableSlots(ctx context.Context, roomID uuid.UUID, date 
 
 	if !roomExists {
 		return nil, errs.ErrRoomNotExists
+	}
+
+	slotsExist, err := s.repo.IsSlotsExistForDate(ctx, date)
+	if err != nil {
+		return nil, fmt.Errorf("checking if slots exist: %w", err)
+	}
+
+	if !slotsExist {
+		schedule, creationErr := s.scheduleRepo.GetForRoom(ctx, roomID)
+		if creationErr != nil {
+			return nil, fmt.Errorf("getting schedule: %w", creationErr)
+		}
+
+		if slices.Contains(schedule.DaysOfWeek(), date.Weekday()) {
+			newSlots := domain.GenerateSlots(schedule, date)
+			if createErr := s.repo.Create(ctx, newSlots); createErr != nil {
+				return nil, fmt.Errorf("creating slots: %w", createErr)
+			}
+		}
 	}
 
 	filter := &dto.SlotFilter{
