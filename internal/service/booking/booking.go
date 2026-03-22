@@ -3,7 +3,6 @@ package booking
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -37,7 +36,13 @@ type LinkManager interface {
 	Cancel(ctx context.Context, link string) error
 }
 
+type Logger interface {
+	Error(msg string)
+}
+
 type Service struct {
+	logger Logger
+
 	repo        Repository
 	slotRepo    SlotRepository
 	userRepo    UserRepository
@@ -45,6 +50,8 @@ type Service struct {
 }
 
 type Config struct {
+	Logger Logger
+
 	BookingRepo Repository
 	SlotRepo    SlotRepository
 	UserRepo    UserRepository
@@ -53,6 +60,8 @@ type Config struct {
 
 func NewService(c *Config) *Service {
 	return &Service{
+		logger: c.Logger,
+
 		repo:        c.BookingRepo,
 		slotRepo:    c.SlotRepo,
 		userRepo:    c.UserRepo,
@@ -121,7 +130,7 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 		if conferenceLink != nil {
 			cancelErr := s.linkManager.Cancel(ctx, *conferenceLink)
 			if cancelErr != nil {
-				slog.Error("Failed to cancel conference with link %s: %w", *conferenceLink, cancelErr)
+				s.logger.Error(fmt.Sprintf("Failed to cancel conference with link %s: %v", *conferenceLink, cancelErr))
 			}
 		}
 
@@ -193,7 +202,8 @@ func (s *Service) Cancel(ctx context.Context, bookingID uuid.UUID) (*domain.Book
 	if booking.ConferenceLink() != nil {
 		cancelErr := s.linkManager.Cancel(ctx, *booking.ConferenceLink())
 		if cancelErr != nil {
-			slog.Error("Failed to cancel conference with link %s: %w", *booking.ConferenceLink(), cancelErr)
+			s.logger.Error(
+				fmt.Sprintf("Failed to cancel conference with link %s: %v", *booking.ConferenceLink(), cancelErr))
 		}
 	}
 

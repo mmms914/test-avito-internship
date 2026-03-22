@@ -24,6 +24,8 @@ var (
 )
 
 type testMocks struct {
+	logger *mocks.Logger
+
 	repo        *mocks.Repository
 	slotRepo    *mocks.SlotRepository
 	userRepo    *mocks.UserRepository
@@ -32,6 +34,8 @@ type testMocks struct {
 
 func newMocks(t *testing.T) *testMocks {
 	return &testMocks{
+		logger: mocks.NewLogger(t),
+
 		repo:        mocks.NewRepository(t),
 		slotRepo:    mocks.NewSlotRepository(t),
 		userRepo:    mocks.NewUserRepository(t),
@@ -271,6 +275,9 @@ func TestService_Create(t *testing.T) {
 					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
 					Return(errOtherInternal).
 					Once()
+				m.logger.
+					On("Error", mock.AnythingOfType("string")).
+					Once()
 			},
 			expectedError: errInternal,
 		},
@@ -347,6 +354,7 @@ func TestService_Create(t *testing.T) {
 			}
 
 			s := booking.NewService(&booking.Config{
+				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
 				UserRepo:    m.userRepo,
@@ -429,6 +437,7 @@ func TestService_List(t *testing.T) {
 			}
 
 			s := booking.NewService(&booking.Config{
+				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
 				UserRepo:    m.userRepo,
@@ -494,6 +503,7 @@ func TestService_ListForUser(t *testing.T) {
 			}
 
 			s := booking.NewService(&booking.Config{
+				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
 				UserRepo:    m.userRepo,
@@ -580,6 +590,9 @@ func TestService_Cancel(t *testing.T) {
 				m.linkManager.
 					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
 					Return(errOtherInternal).
+					Once()
+				m.logger.
+					On("Error", mock.AnythingOfType("string")).
 					Once()
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
@@ -675,6 +688,7 @@ func TestService_Cancel(t *testing.T) {
 			}
 
 			s := booking.NewService(&booking.Config{
+				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
 				UserRepo:    m.userRepo,
