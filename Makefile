@@ -1,4 +1,4 @@
-.PHONY: help lint
+.PHONY: help lint mock test
 
 help: ## Показать справку
 	@echo "Доступные команды:"
@@ -8,5 +8,8 @@ help: ## Показать справку
 lint: ## Пролинтить весь код
 	@golangci-lint run ./...
 
-mock: ## Пролинтить весь код
+mock: ## Сгенерировать моки
 	@go generate ./...
+
+test: ## Запустить юнит-тесты
+	@go test ./...

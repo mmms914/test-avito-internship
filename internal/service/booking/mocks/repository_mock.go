@@ -78,24 +78,52 @@ func (_m *Repository) GetByID(ctx context.Context, bookingID uuid.UUID) (*domain
 	return r0, r1
 }
 
+// IsSlotAlreadyBooked provides a mock function with given fields: ctx, slotID
+func (_m *Repository) IsSlotAlreadyBooked(ctx context.Context, slotID uuid.UUID) (bool, error) {
+	ret := _m.Called(ctx, slotID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IsSlotAlreadyBooked")
+	}
+
+	var r0 bool
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (bool, error)); ok {
+		return rf(ctx, slotID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) bool); ok {
+		r0 = rf(ctx, slotID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
+		r1 = rf(ctx, slotID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // List provides a mock function with given fields: ctx, filter
-func (_m *Repository) List(ctx context.Context, filter *dto.BookingFilter) (*domain.Booking, error) {
+func (_m *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
 	ret := _m.Called(ctx, filter)
 
 	if len(ret) == 0 {
 		panic("no return value specified for List")
 	}
 
-	var r0 *domain.Booking
+	var r0 []*domain.Booking
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingFilter) (*domain.Booking, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingFilter) ([]*domain.Booking, error)); ok {
 		return rf(ctx, filter)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingFilter) *domain.Booking); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingFilter) []*domain.Booking); ok {
 		r0 = rf(ctx, filter)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Booking)
+			r0 = ret.Get(0).([]*domain.Booking)
 		}
 	}
 
