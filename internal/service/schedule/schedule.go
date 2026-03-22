@@ -1,4 +1,4 @@
-package scheduler
+package schedule
 
 import (
 	"context"
@@ -15,6 +15,7 @@ type RoomRepository interface {
 
 type Repository interface {
 	Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error)
+	ExistsForRoom(ctx context.Context, roomID uuid.UUID) (bool, error)
 }
 
 type Service struct {
@@ -23,14 +24,14 @@ type Service struct {
 }
 
 type Config struct {
-	roomRepo RoomRepository
-	repo     Repository
+	RoomRepo RoomRepository
+	Repo     Repository
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
-		roomRepo: c.roomRepo,
-		repo:     c.repo,
+		roomRepo: c.RoomRepo,
+		repo:     c.Repo,
 	}
 }
 func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error) {
@@ -52,6 +53,14 @@ func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domai
 		return nil, errs.ErrRoomNotExists
 	}
 
+	scheduleExists, err := s.repo.ExistsForRoom(ctx, schedule.RoomID())
+	if err != nil {
+		return nil, fmt.Errorf("checking if schedule exists: %w", err)
+	}
+
+	if scheduleExists {
+		return nil, errs.ErrScheduleExists
+	}
 	createdSchedule, err := s.repo.Create(ctx, schedule)
 	if err != nil {
 		return nil, fmt.Errorf("creating schedule: %w", err)

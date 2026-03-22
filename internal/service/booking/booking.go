@@ -14,8 +14,9 @@ import (
 
 type Repository interface {
 	GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.Booking, error)
+	IsSlotAlreadyBooked(ctx context.Context, slotID uuid.UUID) (bool, error)
 	Create(ctx context.Context, booking *domain.Booking) (*domain.Booking, error)
-	List(ctx context.Context, filter *dto.BookingFilter) (*domain.Booking, error)
+	List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error)
 	Update(ctx context.Context, bum *dto.BookingUpdateModel) (*domain.Booking, error)
 }
 
@@ -41,18 +42,18 @@ type Service struct {
 }
 
 type Config struct {
-	bookingRepo Repository
-	slotRepo    SlotRepository
-	userRepo    UserRepository
-	linkManager LinkManager
+	BookingRepo Repository
+	SlotRepo    SlotRepository
+	UserRepo    UserRepository
+	LinkManager LinkManager
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
-		repo:        c.bookingRepo,
-		slotRepo:    c.slotRepo,
-		userRepo:    c.userRepo,
-		linkManager: c.linkManager,
+		repo:        c.BookingRepo,
+		slotRepo:    c.SlotRepo,
+		userRepo:    c.UserRepo,
+		linkManager: c.LinkManager,
 	}
 }
 
@@ -75,6 +76,15 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 		return nil, errs.ErrSlotNotFound
 	}
 
+	isAlreadyBooked, err := s.repo.IsSlotAlreadyBooked(ctx, booking.SlotID)
+	if err != nil {
+		return nil, fmt.Errorf("checking if slot is already booked: %w", err)
+	}
+
+	if isAlreadyBooked {
+		return nil, errs.ErrSlotAlreadyBooked
+	}
+
 	userExists, err := s.userRepo.Exists(ctx, creds.ID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if user exists: %w", err)
@@ -86,9 +96,9 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 
 	var conferenceLink *string
 	if booking.CreateConferenceLink != nil && *booking.CreateConferenceLink {
-		cLink, err := s.linkManager.Create(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("creating conference link: %w", err)
+		cLink, linkErr := s.linkManager.Create(ctx)
+		if linkErr != nil {
+			return nil, fmt.Errorf("creating conference link: %w", linkErr)
 		}
 
 		conferenceLink = &cLink
@@ -110,7 +120,7 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 	return createdBooking, nil
 }
 
-func (s *Service) List(ctx context.Context, filter *dto.BookingFilter) (*domain.Booking, error) {
+func (s *Service) List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
 	creds, err := domain.GetCredentialsFromContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get credentials: %w", err)
@@ -128,7 +138,7 @@ func (s *Service) List(ctx context.Context, filter *dto.BookingFilter) (*domain.
 	return bookings, nil
 }
 
-func (s *Service) ListForUser(ctx context.Context) (*domain.Booking, error) {
+func (s *Service) ListForUser(ctx context.Context) ([]*domain.Booking, error) {
 	creds, err := domain.GetCredentialsFromContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get credentials: %w", err)
