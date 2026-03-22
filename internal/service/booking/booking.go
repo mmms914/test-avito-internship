@@ -21,12 +21,10 @@ type Repository interface {
 	Update(ctx context.Context, bum *dto.BookingUpdateModel) (*domain.Booking, error)
 }
 
-//nolint:iface // interfaces has different ways for development
 type SlotRepository interface {
-	Exists(ctx context.Context, slotID uuid.UUID) (bool, error)
+	GetByID(ctx context.Context, slotID uuid.UUID) (*domain.Slot, error)
 }
 
-//nolint:iface // interfaces has different ways for development
 type UserRepository interface {
 	Exists(ctx context.Context, userID uuid.UUID) (bool, error)
 }
@@ -79,13 +77,13 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 		return nil, errs.ErrForbidden
 	}
 
-	slotExists, err := s.slotRepo.Exists(ctx, booking.SlotID)
+	slot, err := s.slotRepo.GetByID(ctx, booking.SlotID)
 	if err != nil {
-		return nil, fmt.Errorf("checking if slot exists: %w", err)
+		return nil, fmt.Errorf("getting slot: %w", err)
 	}
 
-	if !slotExists {
-		return nil, errs.ErrSlotNotFound
+	if slot.IsInPast() {
+		return nil, errs.ErrSlotTimeInPast
 	}
 
 	isAlreadyBooked, err := s.repo.IsSlotAlreadyBooked(ctx, booking.SlotID)

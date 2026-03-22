@@ -76,8 +76,8 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, errInternal).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(nil, errInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -91,11 +91,32 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(nil, errs.ErrSlotNotFound).
 					Once()
 			},
 			expectedError: errs.ErrSlotNotFound,
+		},
+		"slot is in past": {
+			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
+				domain.UserIDKey, uuid.UUID{}),
+			model: &dto.BookingCreateModel{
+				SlotID:               uuid.UUID{},
+				CreateConferenceLink: ptr.To(true),
+			},
+			setupMocks: func(m *testMocks) {
+				m.slotRepo.
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(-time.Hour).UTC(),
+							EndTime:   time.Now().Add(-time.Minute).UTC(),
+						})), nil).
+					Once()
+			},
+			expectedError: errs.ErrSlotTimeInPast,
 		},
 		"error checking if slot already booked": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
@@ -106,8 +127,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -125,8 +152,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -144,8 +177,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -167,8 +206,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -190,8 +235,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -217,8 +268,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -252,8 +309,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -290,8 +353,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -321,8 +390,14 @@ func TestService_Create(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.slotRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
+					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
+					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
+						&domain.SlotRestoreSpecs{
+							ID:        uuid.UUID{},
+							RoomID:    uuid.UUID{},
+							StartTime: time.Now().Add(time.Hour).UTC(),
+							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
+						})), nil).
 					Once()
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
