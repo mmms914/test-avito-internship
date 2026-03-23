@@ -7,14 +7,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
-
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 )
-
-var validate = validator.New()
 
 func handleServiceError(w http.ResponseWriter, err error, logger *slog.Logger) {
 	switch {
@@ -28,8 +24,6 @@ func handleServiceError(w http.ResponseWriter, err error, logger *slog.Logger) {
 		writeError(w, models.ScheduleExistsErrorCode, "schedule already exists", http.StatusConflict)
 	case errors.Is(err, errs.ErrUserNotFound):
 		writeError(w, models.NotFoundErrorCode, "user not found", http.StatusNotFound)
-	case errors.Is(err, errs.ErrRoomNotExists):
-		writeError(w, models.RoomNotFoundErrorCode, "room not found", http.StatusNotFound)
 	case errors.Is(err, errs.ErrBookingNotFound):
 		writeError(w, models.BookingNotFoundErrorCode, "booking not found", http.StatusNotFound)
 	case errors.Is(err, errs.ErrSlotNotFound):
@@ -42,7 +36,7 @@ func handleServiceError(w http.ResponseWriter, err error, logger *slog.Logger) {
 	}
 }
 
-func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(data)
@@ -77,7 +71,7 @@ func checkUserRole(r *http.Request) error {
 	}
 
 	if auth.Role != domain.UserRole {
-		return fmt.Errorf("user is not an user role")
+		return errors.New("user is not an user role")
 	}
 	return nil
 }
@@ -89,7 +83,7 @@ func checkAdminRole(r *http.Request) error {
 	}
 
 	if auth.Role != domain.AdminRole {
-		return fmt.Errorf("user is not an admin role")
+		return errors.New("user is not an admin role")
 	}
 	return nil
 }

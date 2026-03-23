@@ -76,25 +76,25 @@ func TestService_GetAll(t *testing.T) {
 func TestService_Create(t *testing.T) {
 	tests := map[string]struct {
 		ctx           context.Context
-		room          *domain.Room
+		room          *domain.RoomInitSpecs
 		setupMocks    func(m *testMocks)
 		expectedError error
 	}{
 		"no credentials in ctx": {
 			ctx:           context.Background(),
-			room:          &domain.Room{},
+			room:          &domain.RoomInitSpecs{},
 			expectedError: errs.ErrUnauthorized,
 		},
 		"user is NOT admin, forbidden": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
 				domain.UserIDKey, uuid.UUID{}),
-			room:          &domain.Room{},
+			room:          &domain.RoomInitSpecs{},
 			expectedError: errs.ErrForbidden,
 		},
 		"error creating room": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			room: &domain.Room{},
+			room: &domain.RoomInitSpecs{},
 			setupMocks: func(m *testMocks) {
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Room")).
@@ -106,7 +106,7 @@ func TestService_Create(t *testing.T) {
 		"success": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			room: &domain.Room{},
+			room: &domain.RoomInitSpecs{},
 			setupMocks: func(m *testMocks) {
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Room")).

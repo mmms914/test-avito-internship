@@ -18,10 +18,15 @@ type SlotHandler struct {
 	logger  *slog.Logger
 }
 
-func NewSlotHandler(service *slot.Service, logger *slog.Logger) *SlotHandler {
+type SlotHandlerConfig struct {
+	Service *slot.Service
+	Logger  *slog.Logger
+}
+
+func NewSlotHandler(c *SlotHandlerConfig) *SlotHandler {
 	return &SlotHandler{
-		service: service,
-		logger:  logger,
+		service: c.Service,
+		logger:  c.Logger,
 	}
 }
 

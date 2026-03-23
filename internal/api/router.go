@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers"
 	appmiddleware "github.com/avito-internships/test-backend-1-mmms914/internal/api/middleware"
@@ -48,16 +49,34 @@ func NewRouter(c *Config) *Router {
 		logger:    c.Logger,
 	}
 
+	validate := validator.New()
+
 	r.authHandler = handlers.NewAuthHandler(&handlers.AuthHandlerConfig{
 		Logger:          c.Logger,
 		Service:         c.UserService,
+		Validate:        validate,
 		JwtSecret:       c.JWTSecret,
 		ExpirationHours: c.ExpirationHours,
 	})
-	r.roomHandler = handlers.NewRoomHandler(c.RoomService, c.Logger)
-	r.scheduleHandler = handlers.NewScheduleHandler(c.ScheduleService, c.Logger)
-	r.slotHandler = handlers.NewSlotHandler(c.SlotService, c.Logger)
-	r.bookingHandler = handlers.NewBookingHandler(c.BookingService, c.Logger)
+	r.roomHandler = handlers.NewRoomHandler(&handlers.RoomHandlerConfig{
+		Logger:   c.Logger,
+		Validate: validate,
+		Service:  c.RoomService,
+	})
+	r.scheduleHandler = handlers.NewScheduleHandler(&handlers.ScheduleHandlerConfig{
+		Service:  c.ScheduleService,
+		Validate: validate,
+		Logger:   c.Logger,
+	})
+	r.slotHandler = handlers.NewSlotHandler(&handlers.SlotHandlerConfig{
+		Service: c.SlotService,
+		Logger:  c.Logger,
+	})
+	r.bookingHandler = handlers.NewBookingHandler(&handlers.BookingHandlerConfig{
+		Service:  c.BookingService,
+		Logger:   c.Logger,
+		Validate: validate,
+	})
 
 	r.setupMiddleware()
 	r.setupRoutes()
@@ -102,7 +121,7 @@ func (rt *Router) setupRoutes() {
 	})
 }
 
-func (rt *Router) handleInfo(w http.ResponseWriter, req *http.Request) {
+func (rt *Router) handleInfo(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_ = json.NewEncoder(w).Encode(map[string]string{

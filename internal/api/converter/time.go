@@ -5,25 +5,6 @@ import (
 	"time"
 )
 
-var weekdaysFromInt = map[int]time.Weekday{
-	1: time.Monday,
-	2: time.Tuesday,
-	3: time.Wednesday,
-	4: time.Thursday,
-	5: time.Friday,
-	6: time.Saturday,
-	7: time.Sunday,
-}
-var intFromWeekdays = map[time.Weekday]int{
-	time.Monday:    1,
-	time.Tuesday:   2,
-	time.Wednesday: 3,
-	time.Thursday:  4,
-	time.Friday:    5,
-	time.Saturday:  6,
-	time.Sunday:    7,
-}
-
 func StringHourMinuteToTime(timeStr *string) (time.Duration, error) {
 	t, err := time.Parse("15:04", *timeStr)
 	if err != nil {
@@ -42,6 +23,16 @@ func TimeHourMinuteToString(timeDur time.Duration) string {
 }
 
 func IntArrayToWeekdays(daysInt *[]int) ([]time.Weekday, error) {
+	weekdaysFromInt := map[int]time.Weekday{
+		1: time.Monday,
+		2: time.Tuesday,
+		3: time.Wednesday,
+		4: time.Thursday,
+		5: time.Friday,
+		6: time.Saturday,
+		7: time.Sunday,
+	}
+
 	convertedDays := make([]time.Weekday, 0, len(*daysInt))
 	for _, dayI := range *daysInt {
 		if dayI < 1 || dayI > 7 {
@@ -55,6 +46,17 @@ func IntArrayToWeekdays(daysInt *[]int) ([]time.Weekday, error) {
 }
 
 func WeekdaysToIntArray(days []time.Weekday) []int {
+	//nolint:mnd // useless
+	intFromWeekdays := map[time.Weekday]int{
+		time.Monday:    1,
+		time.Tuesday:   2,
+		time.Wednesday: 3,
+		time.Thursday:  4,
+		time.Friday:    5,
+		time.Saturday:  6,
+		time.Sunday:    7,
+	}
+
 	convertedDays := make([]int, 0, len(days))
 	for _, day := range days {
 		convertedDays = append(convertedDays, intFromWeekdays[day])

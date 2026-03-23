@@ -7,6 +7,8 @@ import (
 
 	"log/slog"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
@@ -14,14 +16,22 @@ import (
 )
 
 type RoomHandler struct {
-	service *room.Service
-	logger  *slog.Logger
+	service  *room.Service
+	validate *validator.Validate
+	logger   *slog.Logger
 }
 
-func NewRoomHandler(service *room.Service, logger *slog.Logger) *RoomHandler {
+type RoomHandlerConfig struct {
+	Service  *room.Service
+	Validate *validator.Validate
+	Logger   *slog.Logger
+}
+
+func NewRoomHandler(c *RoomHandlerConfig) *RoomHandler {
 	return &RoomHandler{
-		service: service,
-		logger:  logger,
+		service:  c.Service,
+		validate: c.Validate,
+		logger:   c.Logger,
 	}
 }
 
@@ -37,7 +47,7 @@ func (rh *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := rh.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}

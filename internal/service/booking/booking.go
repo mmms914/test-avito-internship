@@ -10,7 +10,6 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
 )
 
 type Repository interface {
@@ -121,7 +120,7 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 			UserID:         creds.ID,
 			Status:         domain.ActiveBookingStatus,
 			ConferenceLink: conferenceLink,
-			CreatedAt:      ptr.To(time.Now().UTC()),
+			CreatedAt:      time.Now().UTC(),
 		})))
 	if err != nil {
 		// компенсирующее действие по удалению созданной ссылки

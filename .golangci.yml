@@ -21,7 +21,7 @@ issues:
 formatters:
   enable:
     - goimports # checks if the code and import statements are formatted according to the 'goimports' command
-    - golines # checks if code is formatted, and fixes long lines
+    #- golines # checks if code is formatted, and fixes long lines
 
     ## you may want to enable
     #- gci # checks if code and import statements are formatted, with additional rules
@@ -152,7 +152,7 @@ linters:
     #- gosmopolitan # reports certain i18n/l10n anti-patterns in your Go codebase
     #- grouper # analyzes expression groups
     #- importas # enforces consistent import aliases
-    #- lll # [replaced by golines] reports long lines
+    - lll # [replaced by golines] reports long lines
     #- maintidx # measures the maintainability index of each function
     #- misspell # [useless] finds commonly misspelled English words in comments
     #- nlreturn # [too strict and mostly code is not more readable] checks for a new line before return and branch statements to increase code clarity

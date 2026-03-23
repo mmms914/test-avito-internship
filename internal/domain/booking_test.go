@@ -38,7 +38,7 @@ func TestNewBooking_WithRestoreSpecs(t *testing.T) {
 	userID := uuid.New()
 	status := domain.ActiveBookingStatus
 	conferenceLink := ptr.To("link")
-	createdAt := ptr.To(time.Now())
+	createdAt := time.Now().UTC()
 
 	booking := domain.NewBooking(
 		domain.WithBookingRestoreSpecs(&domain.BookingRestoreSpecs{

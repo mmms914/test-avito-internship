@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/auth"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
@@ -16,6 +18,7 @@ import (
 type AuthHandler struct {
 	logger          *slog.Logger
 	service         *user.Service
+	validate        *validator.Validate
 	jwtSecret       string
 	expirationHours int
 }
@@ -23,6 +26,7 @@ type AuthHandler struct {
 type AuthHandlerConfig struct {
 	Logger          *slog.Logger
 	Service         *user.Service
+	Validate        *validator.Validate
 	JwtSecret       string
 	ExpirationHours int
 }
@@ -31,6 +35,7 @@ func NewAuthHandler(c *AuthHandlerConfig) *AuthHandler {
 	return &AuthHandler{
 		logger:          c.Logger,
 		service:         c.Service,
+		validate:        c.Validate,
 		jwtSecret:       c.JwtSecret,
 		expirationHours: c.ExpirationHours,
 	}
@@ -43,7 +48,7 @@ func (ah *AuthHandler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := ah.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}
@@ -74,7 +79,7 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := ah.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}
@@ -107,7 +112,7 @@ func (ah *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := ah.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
@@ -18,14 +19,22 @@ import (
 )
 
 type BookingHandler struct {
-	service *booking.Service
-	logger  *slog.Logger
+	service  *booking.Service
+	validate *validator.Validate
+	logger   *slog.Logger
 }
 
-func NewBookingHandler(service *booking.Service, logger *slog.Logger) *BookingHandler {
+type BookingHandlerConfig struct {
+	Service  *booking.Service
+	Validate *validator.Validate
+	Logger   *slog.Logger
+}
+
+func NewBookingHandler(c *BookingHandlerConfig) *BookingHandler {
 	return &BookingHandler{
-		service: service,
-		logger:  logger,
+		service:  c.Service,
+		validate: c.Validate,
+		logger:   c.Logger,
 	}
 }
 
@@ -41,7 +50,7 @@ func (bh *BookingHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := bh.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}
@@ -69,7 +78,8 @@ func (bh *BookingHandler) List(w http.ResponseWriter, r *http.Request) {
 	if page != "" {
 		pInt, err := strconv.Atoi(page)
 		if err != nil || pInt < domain.MinPage {
-			writeError(w, models.InvalidRequestErrorCode, "page must be an integer and greater than 0", http.StatusBadRequest)
+			writeError(w, models.InvalidRequestErrorCode,
+				"page must be an integer and greater than 0", http.StatusBadRequest)
 			return
 		}
 
@@ -81,7 +91,8 @@ func (bh *BookingHandler) List(w http.ResponseWriter, r *http.Request) {
 	if pageSize != "" {
 		pSizeInt, err := strconv.Atoi(pageSize)
 		if err != nil || pSizeInt < domain.MinPageSize || pSizeInt > domain.MaxPageSize {
-			writeError(w, models.InvalidRequestErrorCode, "page size must be an integer and between 1 and 100", http.StatusBadRequest)
+			writeError(w, models.InvalidRequestErrorCode,
+				"page size must be an integer and between 1 and 100", http.StatusBadRequest)
 			return
 		}
 

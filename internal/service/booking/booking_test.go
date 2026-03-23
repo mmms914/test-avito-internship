@@ -639,7 +639,7 @@ func TestService_Cancel(t *testing.T) {
 							SlotID:    uuid.UUID{},
 							UserID:    uuid.New(),
 							Status:    domain.ActiveBookingStatus,
-							CreatedAt: ptr.To(time.Now().UTC()),
+							CreatedAt: time.Now().UTC(),
 						})), nil).
 					Once()
 			},
@@ -659,7 +659,7 @@ func TestService_Cancel(t *testing.T) {
 							UserID:         uuid.UUID{},
 							Status:         domain.ActiveBookingStatus,
 							ConferenceLink: ptr.To("link"),
-							CreatedAt:      ptr.To(time.Now().UTC()),
+							CreatedAt:      time.Now().UTC(),
 						})), nil).
 					Once()
 				m.linkManager.
@@ -689,7 +689,7 @@ func TestService_Cancel(t *testing.T) {
 							SlotID:    uuid.UUID{},
 							UserID:    uuid.UUID{},
 							Status:    domain.ActiveBookingStatus,
-							CreatedAt: ptr.To(time.Now().UTC()),
+							CreatedAt: time.Now().UTC(),
 						})), nil).
 					Once()
 
@@ -713,7 +713,7 @@ func TestService_Cancel(t *testing.T) {
 							SlotID:    uuid.UUID{},
 							UserID:    uuid.UUID{},
 							Status:    domain.ActiveBookingStatus,
-							CreatedAt: ptr.To(time.Now().UTC()),
+							CreatedAt: time.Now().UTC(),
 						})), nil).
 					Once()
 
@@ -738,7 +738,7 @@ func TestService_Cancel(t *testing.T) {
 							UserID:         uuid.UUID{},
 							Status:         domain.CancelledBookingStatus,
 							ConferenceLink: ptr.To("link"),
-							CreatedAt:      ptr.To(time.Now().UTC()),
+							CreatedAt:      time.Now().UTC(),
 						})), nil).
 					Once()
 				m.linkManager.

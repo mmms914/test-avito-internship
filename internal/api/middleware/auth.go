@@ -27,7 +27,8 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != bearerPrefix {
-				writeError(w, models.UnauthorizedErrorCode, "invalid authorization header format, expected Bearer token", http.StatusUnauthorized)
+				writeError(w, models.UnauthorizedErrorCode,
+					"invalid authorization header format, expected Bearer token", http.StatusUnauthorized)
 				return
 			}
 
@@ -50,7 +51,7 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 func writeError(w http.ResponseWriter, code, message string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]any{
 		"error": map[string]string{
 			"code":    code,
 			"message": message,

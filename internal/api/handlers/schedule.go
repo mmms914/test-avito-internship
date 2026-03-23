@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
@@ -16,14 +17,22 @@ import (
 )
 
 type ScheduleHandler struct {
-	service *schedule.Service
-	logger  *slog.Logger
+	service  *schedule.Service
+	validate *validator.Validate
+	logger   *slog.Logger
 }
 
-func NewScheduleHandler(service *schedule.Service, logger *slog.Logger) *ScheduleHandler {
+type ScheduleHandlerConfig struct {
+	Service  *schedule.Service
+	Validate *validator.Validate
+	Logger   *slog.Logger
+}
+
+func NewScheduleHandler(c *ScheduleHandlerConfig) *ScheduleHandler {
 	return &ScheduleHandler{
-		service: service,
-		logger:  logger,
+		service:  c.Service,
+		validate: c.Validate,
+		logger:   c.Logger,
 	}
 }
 
@@ -41,12 +50,12 @@ func (sh *ScheduleHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req models.CreateScheduleRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if decodeErr := json.NewDecoder(r.Body).Decode(&req); decodeErr != nil {
 		writeError(w, models.InvalidRequestErrorCode, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if validationErrors := validate.Struct(req); validationErrors != nil {
+	if validationErrors := sh.validate.Struct(req); validationErrors != nil {
 		writeValidationError(w, errors.Join(validationErrors))
 		return
 	}

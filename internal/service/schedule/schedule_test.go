@@ -33,31 +33,30 @@ func newMocks(t *testing.T) *testMocks {
 func TestService_Create(t *testing.T) {
 	tests := map[string]struct {
 		ctx           context.Context
-		schedule      *domain.Schedule
+		schedule      *domain.ScheduleInitSpecs
 		setupMocks    func(m *testMocks)
 		expectedError error
 	}{
 		"no credentials in ctx": {
 			ctx:           context.Background(),
-			schedule:      &domain.Schedule{},
+			schedule:      &domain.ScheduleInitSpecs{},
 			expectedError: errs.ErrUnauthorized,
 		},
 		"user is NOT admin, forbidden": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule:      &domain.Schedule{},
+			schedule:      &domain.ScheduleInitSpecs{},
 			expectedError: errs.ErrForbidden,
 		},
 		"error getting room": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -69,13 +68,12 @@ func TestService_Create(t *testing.T) {
 		"room does not exist": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -87,13 +85,12 @@ func TestService_Create(t *testing.T) {
 		"error checking if schedule exists for room": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -109,13 +106,12 @@ func TestService_Create(t *testing.T) {
 		"schedule already exists": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -131,13 +127,12 @@ func TestService_Create(t *testing.T) {
 		"error creating schedule": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
@@ -157,13 +152,12 @@ func TestService_Create(t *testing.T) {
 		"success": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.AdminRole),
 				domain.UserIDKey, uuid.UUID{}),
-			schedule: domain.NewSchedule(domain.WithScheduleRestoreSpecs(
-				&domain.ScheduleRestoreSpecs{
-					RoomID:     uuid.UUID{},
-					DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
-					StartTime:  time.Duration(0),
-					EndTime:    time.Duration(0),
-				})),
+			schedule: &domain.ScheduleInitSpecs{
+				RoomID:     uuid.UUID{},
+				DaysOfWeek: []time.Weekday{time.Monday, time.Wednesday, time.Friday},
+				StartTime:  time.Duration(0),
+				EndTime:    time.Duration(0),
+			},
 			setupMocks: func(m *testMocks) {
 				m.roomRepo.
 					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).

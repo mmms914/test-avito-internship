@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,9 +14,10 @@ const (
 )
 
 type Claims struct {
+	jwt.RegisteredClaims
+
 	UserID string `json:"userId"`
 	Role   string `json:"role"`
-	jwt.RegisteredClaims
 }
 
 func GenerateToken(userID, role, secret string, expirationHours int) (string, error) {
@@ -36,7 +38,7 @@ func GenerateToken(userID, role, secret string, expirationHours int) (string, er
 }
 
 func ValidateToken(tokenString, secret string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -48,12 +50,12 @@ func ValidateToken(tokenString, secret string) (*Claims, error) {
 	}
 
 	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok {
-		return nil, fmt.Errorf("invalid claims type")
+		return nil, errors.New("invalid claims type")
 	}
 
 	return claims, nil
