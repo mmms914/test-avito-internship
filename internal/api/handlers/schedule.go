@@ -69,7 +69,7 @@ func (sh *ScheduleHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdRoom, err := sh.service.Create(r.Context(), &domain.ScheduleInitSpecs{
+	createdSchedule, err := sh.service.Create(r.Context(), &domain.ScheduleInitSpecs{
 		RoomID:     roomID,
 		DaysOfWeek: days,
 		StartTime:  startTime,
@@ -80,5 +80,5 @@ func (sh *ScheduleHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, converter.RoomToResponse(createdRoom))
+	writeJSON(w, http.StatusCreated, converter.ScheduleToResponse(createdSchedule))
 }

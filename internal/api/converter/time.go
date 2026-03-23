@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var weekdays = map[int]time.Weekday{
+var weekdaysFromInt = map[int]time.Weekday{
 	1: time.Monday,
 	2: time.Tuesday,
 	3: time.Wednesday,
@@ -13,6 +13,19 @@ var weekdays = map[int]time.Weekday{
 	5: time.Friday,
 	6: time.Saturday,
 	7: time.Sunday,
+}
+var intFromWeekdays = map[time.Weekday]int{
+	time.Monday:    1,
+	time.Tuesday:   2,
+	time.Wednesday: 3,
+	time.Thursday:  4,
+	time.Friday:    5,
+	time.Saturday:  6,
+	time.Sunday:    7,
+}
+
+func TimeToISOFormat(t time.Time) string {
+	return t.Format("2006-01-02 15:04:05")
 }
 
 func StringHourMinuteToTime(timeStr *string) (time.Duration, error) {
@@ -25,6 +38,13 @@ func StringHourMinuteToTime(timeStr *string) (time.Duration, error) {
 	return duration, nil
 }
 
+func TimeHourMinuteToString(timeDur time.Duration) string {
+	hours := int(timeDur.Hours())
+	minutes := int(timeDur.Minutes())
+
+	return fmt.Sprintf("%02d:%02d", hours, minutes)
+}
+
 func IntArrayToWeekdays(daysInt *[]int) ([]time.Weekday, error) {
 	convertedDays := make([]time.Weekday, 0, len(*daysInt))
 	for _, dayI := range *daysInt {
@@ -32,8 +52,17 @@ func IntArrayToWeekdays(daysInt *[]int) ([]time.Weekday, error) {
 			return nil, fmt.Errorf("invalid day %d", dayI)
 		}
 
-		convertedDays = append(convertedDays, weekdays[dayI])
+		convertedDays = append(convertedDays, weekdaysFromInt[dayI])
 	}
 
 	return convertedDays, nil
+}
+
+func WeekdaysToIntArray(days []time.Weekday) []int {
+	convertedDays := make([]int, 0, len(days))
+	for _, day := range days {
+		convertedDays = append(convertedDays, intFromWeekdays[day])
+	}
+
+	return convertedDays
 }

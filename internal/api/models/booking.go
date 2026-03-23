@@ -1,9 +1,8 @@
 package models
 
 import (
-	"time"
-
 	"github.com/google/uuid"
+	"time"
 )
 
 type CreateBookingRequest struct {
@@ -11,24 +10,25 @@ type CreateBookingRequest struct {
 	CreateConferenceLink *bool      `json:"createConferenceLink"`
 }
 
-type CreateBookingResponse struct {
-	Booking *BookingResponse `json:"booking"`
-}
 type ListBookingResponse struct {
-	Bookings []*BookingResponse `json:"bookings"`
+	Bookings []*BookingObject `json:"bookings"`
 }
 
 type ListBookingResponseWithPagination struct {
-	Bookings   []*BookingResponse `json:"bookings"`
-	Pagination *Pagination        `json:"pagination"`
+	Bookings   []*BookingObject `json:"bookings"`
+	Pagination *Pagination      `json:"pagination"`
 }
 type BookingResponse struct {
-	ID             *uuid.UUID `json:"id"`
-	SlotID         *uuid.UUID `json:"slotId"`
-	UserID         *uuid.UUID `json:"userId"`
-	Status         *string    `json:"status"`
-	ConferenceLink *string    `json:"conferenceLink"`
-	CreatedAt      *time.Time `json:"createdAt"`
+	Booking *BookingObject `json:"booking"`
+}
+
+type BookingObject struct {
+	ID             uuid.UUID `json:"id"`
+	SlotID         uuid.UUID `json:"slotId"`
+	UserID         uuid.UUID `json:"userId"`
+	Status         string    `json:"status"`
+	ConferenceLink *string   `json:"conferenceLink"`
+	CreatedAt      time.Time `json:"createdAt"`
 }
 
 type Pagination struct {

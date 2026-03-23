@@ -12,9 +12,13 @@ type CreateScheduleRequest struct {
 }
 
 type ScheduleResponse struct {
-	ID         *uuid.UUID `json:"id"`
-	RoomID     *uuid.UUID `json:"roomId"`
-	DaysOfWeek *[]int     `json:"daysOfWeek"`
-	StartTime  *string    `json:"startTime"`
-	EndTime    *string    `json:"endTime"`
+	Schedule *ScheduleObject `json:"schedule"`
+}
+
+type ScheduleObject struct {
+	ID         uuid.UUID `json:"id"`
+	RoomID     uuid.UUID `json:"roomId"`
+	DaysOfWeek []int     `json:"daysOfWeek"`
+	StartTime  string    `json:"startTime"`
+	EndTime    string    `json:"endTime"`
 }

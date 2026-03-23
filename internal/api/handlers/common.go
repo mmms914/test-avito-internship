@@ -67,6 +67,18 @@ func writeValidationError(w http.ResponseWriter, err error) {
 	})
 }
 
+func checkUserRole(r *http.Request) error {
+	auth, err := domain.GetCredentialsFromContext(r.Context())
+	if err != nil {
+		return fmt.Errorf("getting credentials: %w", err)
+	}
+
+	if auth.Role != domain.UserRole {
+		return fmt.Errorf("user is not an user role")
+	}
+	return nil
+}
+
 func checkAdminRole(r *http.Request) error {
 	auth, err := domain.GetCredentialsFromContext(r.Context())
 	if err != nil {

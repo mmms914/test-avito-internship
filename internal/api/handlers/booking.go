@@ -3,35 +3,33 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
-
-	"log/slog"
-
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/room"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/service/booking"
+	"log/slog"
+	"net/http"
 )
 
-type RoomHandler struct {
-	service *room.Service
+type BookingHandler struct {
+	service *booking.Service
 	logger  *slog.Logger
 }
 
-func NewRoomHandler(service *room.Service, logger *slog.Logger) *RoomHandler {
-	return &RoomHandler{
+func NewBookingHandler(service *booking.Service, logger *slog.Logger) *BookingHandler {
+	return &BookingHandler{
 		service: service,
 		logger:  logger,
 	}
 }
 
-func (rh *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
-	if err := checkAdminRole(r); err != nil {
-		writeError(w, models.ForbiddenErrorCode, "admin role required", http.StatusForbidden)
+func (bh *BookingHandler) Create(w http.ResponseWriter, r *http.Request) {
+	if err := checkUserRole(r); err != nil {
+		writeError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)
 		return
 	}
 
-	var req models.CreateRoomRequest
+	var req models.CreateBookingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, models.InvalidRequestErrorCode, "invalid request body", http.StatusBadRequest)
 		return
@@ -42,17 +40,16 @@ func (rh *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdRoom, err := rh.service.Create(r.Context(), &domain.RoomInitSpecs{
-		Name:        *req.Name,
-		Description: req.Description,
-		Capacity:    req.Capacity,
+	createdBooking, err := bh.service.Create(r.Context(), &dto.BookingCreateModel{
+		SlotID:               *req.SlotID,
+		CreateConferenceLink: req.CreateConferenceLink,
 	})
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
 
-	writeJSON(w, http.StatusCreated, converter.RoomToResponse(createdRoom))
+	writeJSON(w, http.StatusCreated, converter.BookingToResponse(createdBooking))
 }
 
 func (rh *RoomHandler) List(w http.ResponseWriter, r *http.Request) {

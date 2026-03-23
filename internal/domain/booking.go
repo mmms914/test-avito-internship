@@ -101,3 +101,7 @@ func (b *Booking) ConferenceLink() *string {
 func (b *Booking) CreatedAt() *time.Time {
 	return b.createdAt
 }
+
+func (bs BookingStatus) String() string {
+	return string(bs)
+}
