@@ -5,10 +5,13 @@ import (
 	"errors"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/booking"
+	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
 	"log/slog"
 	"net/http"
+	"strconv"
 )
 
 type BookingHandler struct {
@@ -52,12 +55,44 @@ func (bh *BookingHandler) Create(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, converter.BookingToResponse(createdBooking))
 }
 
-func (rh *RoomHandler) List(w http.ResponseWriter, r *http.Request) {
-	rooms, err := rh.service.GetAll(r.Context())
+func (bh *BookingHandler) List(w http.ResponseWriter, r *http.Request) {
+	if err := checkAdminRole(r); err != nil {
+		writeError(w, models.ForbiddenErrorCode, "admin role required", http.StatusForbidden)
+		return
+	}
+
+	pageInt := domain.DefaultPage
+	page := r.URL.Query().Get("page")
+	if page != "" {
+		pInt, err := strconv.Atoi(page)
+		if err != nil || pInt < domain.MinPage {
+			writeError(w, models.InvalidRequestErrorCode, "page must be an integer and greater than 0", http.StatusBadRequest)
+			return
+		}
+
+		pageInt = pInt
+	}
+
+	pageSizeInt := domain.DefaultPageSize
+	pageSize := r.URL.Query().Get("pageSize")
+	if pageSize != "" {
+		pSizeInt, err := strconv.Atoi(pageSize)
+		if err != nil || pSizeInt < domain.MinPageSize || pSizeInt > domain.MaxPageSize {
+			writeError(w, models.InvalidRequestErrorCode, "page size must be an integer and between 1 and 100", http.StatusBadRequest)
+			return
+		}
+
+		pageSizeInt = pSizeInt
+	}
+
+	bookings, err := bh.service.List(r.Context(), &dto.BookingFilter{
+		Page:     ptr.To(pageInt),
+		PageSize: ptr.To(pageSizeInt),
+	})
 	if err != nil {
 		handleServiceError(w, err)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, converter.RoomArrayToResponse(rooms))
+	writeJSON(w, http.StatusOK, converter.BookingArrayToResponse(bookings))
 }

@@ -16,10 +16,10 @@ func BookingToResponse(b *domain.Booking) *models.BookingObject {
 	}
 }
 
-func RoomArrayToResponse(r []*domain.Room) []*models.RoomObject {
-	res := make([]*models.RoomObject, len(r))
-	for i := range r {
-		res[i] = RoomToResponse(r[i])
+func BookingArrayToResponse(b []*domain.Booking) []*models.BookingObject {
+	res := make([]*models.BookingObject, len(b))
+	for i := range b {
+		res[i] = BookingToResponse(b[i])
 	}
 
 	return res

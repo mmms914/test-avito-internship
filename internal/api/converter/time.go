@@ -24,10 +24,6 @@ var intFromWeekdays = map[time.Weekday]int{
 	time.Sunday:    7,
 }
 
-func TimeToISOFormat(t time.Time) string {
-	return t.Format("2006-01-02 15:04:05")
-}
-
 func StringHourMinuteToTime(timeStr *string) (time.Duration, error) {
 	t, err := time.Parse("15:04", *timeStr)
 	if err != nil {

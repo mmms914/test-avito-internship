@@ -4,8 +4,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+)
 
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+const (
+	MaxPageSize     = 100
+	MinPageSize     = 1
+	DefaultPageSize = 20
+
+	MinPage     = 1
+	DefaultPage = 1
 )
 
 type Booking struct {
@@ -14,7 +21,7 @@ type Booking struct {
 	userID         uuid.UUID
 	status         BookingStatus
 	conferenceLink *string
-	createdAt      *time.Time
+	createdAt      time.Time
 }
 
 type BookingInitSpecs struct {
@@ -30,7 +37,7 @@ type BookingRestoreSpecs struct {
 	UserID         uuid.UUID
 	Status         BookingStatus
 	ConferenceLink *string
-	CreatedAt      *time.Time
+	CreatedAt      time.Time
 }
 
 type BookingStatus string
@@ -58,7 +65,7 @@ func WithBookingInitSpecs(sp *BookingInitSpecs) BookingOption {
 		b.slotID = sp.SlotID
 		b.userID = sp.UserID
 		b.status = sp.Status
-		b.createdAt = ptr.To(time.Now().UTC())
+		b.createdAt = time.Now().UTC()
 
 		if sp.ConferenceLink != nil {
 			b.conferenceLink = sp.ConferenceLink
@@ -72,13 +79,10 @@ func WithBookingRestoreSpecs(sp *BookingRestoreSpecs) BookingOption {
 		b.slotID = sp.SlotID
 		b.userID = sp.UserID
 		b.status = sp.Status
+		b.createdAt = sp.CreatedAt
 
 		if sp.ConferenceLink != nil {
 			b.conferenceLink = sp.ConferenceLink
-		}
-
-		if sp.CreatedAt != nil {
-			b.createdAt = sp.CreatedAt
 		}
 	}
 }
@@ -98,7 +102,7 @@ func (b *Booking) Status() BookingStatus {
 func (b *Booking) ConferenceLink() *string {
 	return b.conferenceLink
 }
-func (b *Booking) CreatedAt() *time.Time {
+func (b *Booking) CreatedAt() time.Time {
 	return b.createdAt
 }
 
