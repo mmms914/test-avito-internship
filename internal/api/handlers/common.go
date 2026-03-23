@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -15,7 +16,7 @@ import (
 
 var validate = validator.New()
 
-func handleServiceError(w http.ResponseWriter, err error) {
+func handleServiceError(w http.ResponseWriter, err error, logger *slog.Logger) {
 	switch {
 	case errors.Is(err, errs.ErrRoomNotExists):
 		writeError(w, models.RoomNotFoundErrorCode, "room not found", http.StatusNotFound)
@@ -25,6 +26,8 @@ func handleServiceError(w http.ResponseWriter, err error) {
 		writeError(w, models.UnauthorizedErrorCode, "unauthorized", http.StatusUnauthorized)
 	case errors.Is(err, errs.ErrScheduleExists):
 		writeError(w, models.ScheduleExistsErrorCode, "schedule already exists", http.StatusConflict)
+	case errors.Is(err, errs.ErrUserNotFound):
+		writeError(w, models.NotFoundErrorCode, "user not found", http.StatusNotFound)
 	case errors.Is(err, errs.ErrRoomNotExists):
 		writeError(w, models.RoomNotFoundErrorCode, "room not found", http.StatusNotFound)
 	case errors.Is(err, errs.ErrBookingNotFound):

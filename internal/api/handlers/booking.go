@@ -3,15 +3,18 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
+	"net/http"
+	"strconv"
+
+	"github.com/google/uuid"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/booking"
 	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
-	"log/slog"
-	"net/http"
-	"strconv"
 )
 
 type BookingHandler struct {
@@ -48,7 +51,7 @@ func (bh *BookingHandler) Create(w http.ResponseWriter, r *http.Request) {
 		CreateConferenceLink: req.CreateConferenceLink,
 	})
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, bh.logger)
 		return
 	}
 
@@ -90,9 +93,53 @@ func (bh *BookingHandler) List(w http.ResponseWriter, r *http.Request) {
 		PageSize: ptr.To(pageSizeInt),
 	})
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, bh.logger)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, models.ListBookingResponseWithPagination{
+		Bookings: converter.BookingArrayToResponse(bookings),
+		Pagination: &models.Pagination{
+			Page:     pageInt,
+			PageSize: pageSizeInt,
+			Total:    len(bookings),
+		},
+	})
+}
+
+func (bh *BookingHandler) ListMy(w http.ResponseWriter, r *http.Request) {
+	if err := checkUserRole(r); err != nil {
+		writeError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)
+		return
+	}
+
+	bookings, err := bh.service.ListForUser(r.Context())
+	if err != nil {
+		handleServiceError(w, err, bh.logger)
 		return
 	}
 
 	writeJSON(w, http.StatusOK, converter.BookingArrayToResponse(bookings))
+}
+
+func (bh *BookingHandler) Cancel(w http.ResponseWriter, r *http.Request) {
+	if err := checkUserRole(r); err != nil {
+		writeError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)
+		return
+	}
+
+	bookingIDStr := r.URL.Query().Get("bookingID")
+	bookingID, err := uuid.Parse(bookingIDStr)
+	if err != nil {
+		writeError(w, models.InvalidRequestErrorCode, "bookingID must be uuid", http.StatusBadRequest)
+		return
+	}
+
+	cancelledBooking, err := bh.service.Cancel(r.Context(), bookingID)
+	if err != nil {
+		handleServiceError(w, err, bh.logger)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, converter.BookingToResponse(cancelledBooking))
 }

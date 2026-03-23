@@ -76,7 +76,7 @@ func (sh *ScheduleHandler) Create(w http.ResponseWriter, r *http.Request) {
 		EndTime:    endTime,
 	})
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, sh.logger)
 		return
 	}
 

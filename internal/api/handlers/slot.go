@@ -1,14 +1,16 @@
 package handlers
 
 import (
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/slot"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
+	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/service/slot"
 )
 
 type SlotHandler struct {
@@ -39,7 +41,7 @@ func (sh *SlotHandler) List(w http.ResponseWriter, r *http.Request) {
 
 	slots, err := sh.service.GetAvailableSlots(r.Context(), roomID, date)
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, sh.logger)
 		return
 	}
 

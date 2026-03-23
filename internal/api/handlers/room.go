@@ -48,7 +48,7 @@ func (rh *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Capacity:    req.Capacity,
 	})
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, rh.logger)
 		return
 	}
 
@@ -58,7 +58,7 @@ func (rh *RoomHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (rh *RoomHandler) List(w http.ResponseWriter, r *http.Request) {
 	rooms, err := rh.service.GetAll(r.Context())
 	if err != nil {
-		handleServiceError(w, err)
+		handleServiceError(w, err, rh.logger)
 		return
 	}
 
