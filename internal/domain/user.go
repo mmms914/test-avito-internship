@@ -39,6 +39,10 @@ const (
 	UserRole  Role = "user"
 )
 
+func (r Role) String() string {
+	return string(r)
+}
+
 func NewUser(opts ...UserOption) *User {
 	u := &User{}
 

@@ -3,6 +3,7 @@ package errs
 const (
 	UnauthorizedErrorCode      string = "UNAUTHORIZED"
 	NotFoundErrorCode          string = "NOT_FOUND"
+	UserAlreadyExistsErrorCode string = "USER_ALREADY_EXISTS"
 	RoomNotFoundErrorCode      string = "ROOM_NOT_FOUND"
 	SlotNotFoundErrorCode      string = "SLOT_NOT_FOUND"
 	SlotAlreadyBookedErrorCode string = "SLOT_ALREADY_BOOKED"
