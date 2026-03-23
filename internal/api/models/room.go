@@ -9,17 +9,21 @@ import (
 type CreateRoomRequest struct {
 	Name        *string `json:"name" validate:"required"`
 	Description *string `json:"description"`
-	Capacity    *string `json:"capacity"`
+	Capacity    *int    `json:"capacity"`
 }
 
 type ListRoomResponse struct {
-	Rooms []*RoomResponse `json:"rooms"`
+	Rooms []*RoomObject `json:"rooms"`
 }
 
 type RoomResponse struct {
-	ID          *uuid.UUID `json:"id"`
-	Name        *string    `json:"name"`
-	Description *string    `json:"description"`
-	Capacity    *int       `json:"capacity"`
-	CreatedAt   *time.Time `json:"createdAt"`
+	Room *RoomObject `json:"room"`
+}
+
+type RoomObject struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description"`
+	Capacity    *int      `json:"capacity"`
+	CreatedAt   time.Time `json:"createdAt"`
 }

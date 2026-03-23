@@ -18,14 +18,14 @@ func TestNewRoom_WithInitSpecs(t *testing.T) {
 	room := domain.NewRoom(
 		domain.WithRoomInitSpecs(&domain.RoomInitSpecs{
 			Name:        name,
-			Description: description,
-			Capacity:    capacity,
+			Description: &description,
+			Capacity:    &capacity,
 		}),
 	)
 
 	assert.Equal(t, name, room.Name())
-	assert.Equal(t, description, room.Description())
-	assert.Equal(t, capacity, room.Capacity())
+	assert.Equal(t, description, *room.Description())
+	assert.Equal(t, capacity, *room.Capacity())
 }
 
 func TestNewRoom_WithRestoreSpecs(t *testing.T) {
@@ -39,15 +39,15 @@ func TestNewRoom_WithRestoreSpecs(t *testing.T) {
 		domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
 			ID:          id,
 			Name:        name,
-			Description: description,
-			Capacity:    capacity,
+			Description: &description,
+			Capacity:    &capacity,
 			CreatedAt:   createdAt,
 		}),
 	)
 
 	assert.Equal(t, id, room.ID())
 	assert.Equal(t, name, room.Name())
-	assert.Equal(t, description, room.Description())
-	assert.Equal(t, capacity, room.Capacity())
+	assert.Equal(t, description, *room.Description())
+	assert.Equal(t, capacity, *room.Capacity())
 	assert.Equal(t, createdAt, room.CreatedAt())
 }

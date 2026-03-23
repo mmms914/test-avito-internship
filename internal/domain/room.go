@@ -9,22 +9,22 @@ import (
 type Room struct {
 	id          uuid.UUID
 	name        string
-	description string
-	capacity    int
+	description *string
+	capacity    *int
 	createdAt   time.Time
 }
 
 type RoomInitSpecs struct {
 	Name        string
-	Description string
-	Capacity    int
+	Description *string
+	Capacity    *int
 }
 
 type RoomRestoreSpecs struct {
 	ID          uuid.UUID
 	Name        string
-	Description string
-	Capacity    int
+	Description *string
+	Capacity    *int
 	CreatedAt   time.Time
 }
 
@@ -66,10 +66,10 @@ func (room *Room) ID() uuid.UUID {
 func (room *Room) Name() string {
 	return room.name
 }
-func (room *Room) Description() string {
+func (room *Room) Description() *string {
 	return room.description
 }
-func (room *Room) Capacity() int {
+func (room *Room) Capacity() *int {
 	return room.capacity
 }
 func (room *Room) CreatedAt() time.Time {

@@ -30,7 +30,7 @@ func (s *Service) GetAll(ctx context.Context) ([]*domain.Room, error) {
 	return rooms, nil
 }
 
-func (s *Service) Create(ctx context.Context, room *domain.Room) (*domain.Room, error) {
+func (s *Service) Create(ctx context.Context, specs *domain.RoomInitSpecs) (*domain.Room, error) {
 	creds, err := domain.GetCredentialsFromContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get credentials: %w", err)
@@ -40,6 +40,7 @@ func (s *Service) Create(ctx context.Context, room *domain.Room) (*domain.Room, 
 		return nil, errs.ErrForbidden
 	}
 
+	room := domain.NewRoom(domain.WithRoomInitSpecs(specs))
 	createdRoom, err := s.repo.Create(ctx, room)
 	if err != nil {
 		return nil, fmt.Errorf("creating room: %w", err)

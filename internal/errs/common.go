@@ -1,7 +1,6 @@
 package errs
 
 const (
-	InvalidRequestErrorCode    string = "INVALID_REQUEST"
 	UnauthorizedErrorCode      string = "UNAUTHORIZED"
 	NotFoundErrorCode          string = "NOT_FOUND"
 	RoomNotFoundErrorCode      string = "ROOM_NOT_FOUND"

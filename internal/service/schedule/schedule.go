@@ -35,7 +35,7 @@ func NewService(c *Config) *Service {
 		repo:     c.Repo,
 	}
 }
-func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error) {
+func (s *Service) Create(ctx context.Context, specs *domain.ScheduleInitSpecs) (*domain.Schedule, error) {
 	creds, err := domain.GetCredentialsFromContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get credentials: %w", err)
@@ -45,7 +45,7 @@ func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domai
 		return nil, errs.ErrForbidden
 	}
 
-	roomExists, err := s.roomRepo.Exists(ctx, schedule.RoomID())
+	roomExists, err := s.roomRepo.Exists(ctx, specs.RoomID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if room exists: %w", err)
 	}
@@ -54,7 +54,7 @@ func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domai
 		return nil, errs.ErrRoomNotExists
 	}
 
-	scheduleExists, err := s.repo.ExistsForRoom(ctx, schedule.RoomID())
+	scheduleExists, err := s.repo.ExistsForRoom(ctx, specs.RoomID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if schedule exists: %w", err)
 	}
@@ -62,6 +62,8 @@ func (s *Service) Create(ctx context.Context, schedule *domain.Schedule) (*domai
 	if scheduleExists {
 		return nil, errs.ErrScheduleExists
 	}
+
+	schedule := domain.NewSchedule(domain.WithScheduleInitSpecs(specs))
 	createdSchedule, err := s.repo.Create(ctx, schedule)
 	if err != nil {
 		return nil, fmt.Errorf("creating schedule: %w", err)
