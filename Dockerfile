@@ -2,17 +2,13 @@ FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
-# Копируем go.mod и go.sum
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копируем исходный код
 COPY . .
 
-# Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/app
 
-# Финальный образ
 FROM alpine:latest
 
 WORKDIR /app
