@@ -6,7 +6,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/auth"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 )
@@ -21,14 +24,13 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get(authorizationHeader)
 			if authHeader == "" {
-				writeError(w, models.UnauthorizedErrorCode, "authorization header required", http.StatusUnauthorized)
+				writeUnauthorizedError(w, "authorization header required")
 				return
 			}
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != bearerPrefix {
-				writeError(w, models.UnauthorizedErrorCode,
-					"invalid authorization header format, expected Bearer token", http.StatusUnauthorized)
+				writeUnauthorizedError(w, "invalid authorization header format, expected Bearer token")
 				return
 			}
 
@@ -36,24 +38,30 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 
 			claims, err := auth.ValidateToken(token, jwtSecret)
 			if err != nil {
-				writeError(w, models.UnauthorizedErrorCode, "invalid or expired token", http.StatusUnauthorized)
+				writeUnauthorizedError(w, "invalid or expired token")
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), domain.UserIDKey, claims.UserID)
-			ctx = context.WithValue(ctx, domain.UserRoleKey, claims.Role)
+			userRole, err := converter.UserRoleFromString(claims.Role)
+			if err != nil {
+				writeUnauthorizedError(w, "invalid or expired token")
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), domain.UserIDKey, uuid.MustParse(claims.UserID))
+			ctx = context.WithValue(ctx, domain.UserRoleKey, userRole)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
-func writeError(w http.ResponseWriter, code, message string, status int) {
+func writeUnauthorizedError(w http.ResponseWriter, message string) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
+	w.WriteHeader(http.StatusUnauthorized)
 	_ = json.NewEncoder(w).Encode(map[string]any{
 		"error": map[string]string{
-			"code":    code,
+			"code":    models.UnauthorizedErrorCode,
 			"message": message,
 		},
 	})
