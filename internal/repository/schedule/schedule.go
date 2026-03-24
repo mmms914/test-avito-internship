@@ -39,8 +39,8 @@ func (r *Repository) Create(ctx context.Context, schedule *domain.Schedule) erro
 		schedule.ID(),
 		schedule.RoomID(),
 		daysOfWeek,
-		schedule.StartTime(),
-		schedule.EndTime(),
+		converter.DurationToStringTime(schedule.StartTime()),
+		converter.DurationToStringTime(schedule.EndTime()),
 	)
 
 	if err != nil {
@@ -58,14 +58,14 @@ func (r *Repository) GetForRoom(ctx context.Context, roomID uuid.UUID) (*domain.
     `
 
 	var specs domain.ScheduleRestoreSpecs
-	var daysOfWeek []int
+	var daysOfWeekStr, startTimeStr, endTimeStr string
 
 	err := r.db.QueryRowContext(ctx, query, roomID).Scan(
 		&specs.ID,
 		&specs.RoomID,
-		&daysOfWeek,
-		&specs.StartTime,
-		&specs.EndTime,
+		&daysOfWeekStr,
+		&startTimeStr,
+		&endTimeStr,
 	)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -75,12 +75,30 @@ func (r *Repository) GetForRoom(ctx context.Context, roomID uuid.UUID) (*domain.
 		return nil, fmt.Errorf("failed to find schedule by room id: %w", err)
 	}
 
+	daysOfWeek, err := converter.StringToIntArray(daysOfWeekStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert postgres format of array: %w", err)
+	}
+
 	days, err := converter.IntArrayToWeekdays(&daysOfWeek)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert days of week: %w", err)
 	}
 
 	specs.DaysOfWeek = days
+
+	startTime, err := converter.StringToDuration(startTimeStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert postgres format of time to duration: %w", err)
+	}
+
+	endTime, err := converter.StringToDuration(endTimeStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert postgres format of time to duration: %w", err)
+	}
+
+	specs.StartTime = startTime
+	specs.EndTime = endTime
 
 	return domain.NewSchedule(domain.WithScheduleRestoreSpecs(&specs)), nil
 }

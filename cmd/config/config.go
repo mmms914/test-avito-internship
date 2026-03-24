@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
+	Database DatabaseConfig `mapstructure:"db"`
 	Auth     AuthConfig     `mapstructure:"auth"`
 }
 
@@ -42,8 +42,8 @@ func LoadConfig(path string) (*Config, error) {
 	viper.SetConfigFile(path)
 	viper.SetConfigType("yaml")
 
-	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("read config: %w", err)

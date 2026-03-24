@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  read_timeout: 10s
+  write_timeout: 10s
+  graceful_timeout: 30s
+
+db:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  name: myapp
+  ssl_mode: disable
+  connect_timeout: 5s
+  max_open_conns: 25
+  max_idle_conns: 10
+  max_conn_lifetime: 5m
+
+auth:
+  jwt_secret: "super-secret-key"
+  token_duration_hours: 24

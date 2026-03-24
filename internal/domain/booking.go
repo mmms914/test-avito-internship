@@ -103,7 +103,7 @@ func (b *Booking) ConferenceLink() *string {
 	return b.conferenceLink
 }
 func (b *Booking) CreatedAt() time.Time {
-	return b.createdAt
+	return b.createdAt.UTC()
 }
 
 func (b *Booking) Cancel() {

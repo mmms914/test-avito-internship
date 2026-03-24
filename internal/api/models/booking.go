@@ -7,7 +7,7 @@ import (
 )
 
 type CreateBookingRequest struct {
-	SlotID               *uuid.UUID `json:"slotId" validate:"required,uuid4"`
+	SlotID               *uuid.UUID `json:"slotId" validate:"required,uuid"`
 	CreateConferenceLink *bool      `json:"createConferenceLink"`
 }
 

@@ -47,3 +47,26 @@ func WeekdaysToIntArray(days []time.Weekday) []int {
 
 	return convertedDays
 }
+
+func DurationToStringTime(d time.Duration) string {
+	hours := int(d.Hours())
+	minutes := int(d.Minutes()) % 60 //nolint:mnd // obviously
+	seconds := int(d.Seconds()) % 60 //nolint:mnd // obviously
+	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+}
+
+func StringToDuration(timeStr string) (time.Duration, error) {
+	t, err := time.Parse("15:04:05", timeStr)
+	if err != nil {
+		t, err = time.Parse("15:04", timeStr)
+		if err != nil {
+			return 0, fmt.Errorf("invalid time format: %w", err)
+		}
+	}
+
+	duration := time.Duration(t.Hour())*time.Hour +
+		time.Duration(t.Minute())*time.Minute +
+		time.Duration(t.Second())*time.Second
+
+	return duration, nil
+}

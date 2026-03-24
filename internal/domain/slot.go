@@ -68,10 +68,10 @@ func (s *Slot) RoomID() uuid.UUID {
 	return s.roomID
 }
 func (s *Slot) StartTime() time.Time {
-	return s.startTime
+	return s.startTime.UTC()
 }
 func (s *Slot) EndTime() time.Time {
-	return s.endTime
+	return s.endTime.UTC()
 }
 
 func (s *Slot) IsInPast() bool {

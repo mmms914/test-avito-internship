@@ -81,7 +81,7 @@ func (r *Repository) GetByID(ctx context.Context, slotID uuid.UUID) (*domain.Slo
 }
 func (r *Repository) GetAllAvailable(ctx context.Context, filter *dto.SlotFilter) ([]*domain.Slot, error) {
 	query := `
-        SELECT s.id, s.room_id, s.start_time, s.end_time, s.created_at
+        SELECT s.id, s.room_id, s.start_time, s.end_time
         FROM slots s
         WHERE s.room_id = $1
           AND s.start_time >= $2
@@ -133,8 +133,8 @@ func (r *Repository) IsSlotsExistForDate(ctx context.Context, date time.Time) (b
 	query := `
         SELECT EXISTS(
             SELECT 1 FROM slots 
-            WHERE start_time >= $2 
-              AND start_time < $3
+            WHERE start_time >= $1 
+              AND start_time < $2
         )
     `
 

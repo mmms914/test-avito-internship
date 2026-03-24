@@ -5,7 +5,7 @@ import (
 )
 
 type CreateScheduleRequest struct {
-	RoomID     *uuid.UUID `json:"roomId" validate:"required,uuid4"`
+	RoomID     *uuid.UUID `json:"roomId" validate:"required,uuid"`
 	DaysOfWeek *[]int     `json:"daysOfWeek" validate:"required"`
 	StartTime  *string    `json:"startTime" validate:"required"`
 	EndTime    *string    `json:"endTime" validate:"required"`

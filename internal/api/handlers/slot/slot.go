@@ -42,10 +42,10 @@ func NewHandler(c *HandlerConfig) *Handler {
 }
 
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
-	roomIDStr := chi.URLParam(r, "roomID")
+	roomIDStr := chi.URLParam(r, "roomId")
 	roomID, err := uuid.Parse(roomIDStr)
 	if err != nil {
-		handlers.WriteError(w, models.InvalidRequestErrorCode, "roomID must be UUID", http.StatusBadRequest)
+		handlers.WriteError(w, models.InvalidRequestErrorCode, "roomId must be UUID", http.StatusBadRequest)
 		return
 	}
 

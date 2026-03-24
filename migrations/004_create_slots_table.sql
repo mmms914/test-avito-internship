@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS slots (
     room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     start_time TIMESTAMP WITH TIME ZONE NOT NULL,
     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+    UNIQUE(room_id, start_time)
 );
 
 CREATE INDEX idx_slots_room_id ON slots(room_id);

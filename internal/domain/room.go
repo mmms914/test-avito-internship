@@ -73,5 +73,5 @@ func (room *Room) Capacity() *int {
 	return room.capacity
 }
 func (room *Room) CreatedAt() time.Time {
-	return room.createdAt
+	return room.createdAt.UTC()
 }

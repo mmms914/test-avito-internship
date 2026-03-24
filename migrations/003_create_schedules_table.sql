@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS schedules (
     days_of_week INT[] NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     UNIQUE(room_id)
 );
 
