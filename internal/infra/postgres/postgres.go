@@ -4,32 +4,23 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
-	"strconv"
 	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib" // driver import
 	"github.com/pressly/goose/v3"
 )
 
 type Config struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
-}
-
-func NewConfig() *Config {
-	return &Config{
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnvInt("DB_PORT", 5432),
-		User:     getEnv("DB_USER", "booking_user"),
-		Password: getEnv("DB_PASSWORD", "booking_password"),
-		DBName:   getEnv("DB_NAME", "booking_db"),
-		SSLMode:  getEnv("DB_SSLMODE", "disable"),
-	}
+	Host               string
+	Port               int
+	User               string
+	Password           string
+	DBName             string
+	SSLMode            string
+	ConnectTimeout     time.Duration
+	MaxConnections     int
+	MaxIdleConnections int
+	MaxConnLifetime    time.Duration
 }
 
 func (c *Config) DSN() string {
@@ -39,21 +30,21 @@ func (c *Config) DSN() string {
 	)
 }
 
-func Connect(ctx context.Context, cfg *Config) (*sql.DB, error) {
-	db, err := sql.Open("pgx", cfg.DSN())
+func Connect(ctx context.Context, c *Config) (*sql.DB, error) {
+	db, err := sql.Open("pgx", c.DSN())
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(10)
-	db.SetConnMaxLifetime(5 * time.Minute)
+	db.SetMaxOpenConns(c.MaxConnections)
+	db.SetMaxIdleConns(c.MaxIdleConnections)
+	db.SetConnMaxLifetime(c.MaxConnLifetime)
 
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, c.ConnectTimeout)
 	defer cancel()
 
 	if pingErr := db.PingContext(ctx); pingErr != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+		return nil, fmt.Errorf("failed to ping database: %w", pingErr)
 	}
 
 	return db, nil
@@ -69,20 +60,4 @@ func RunMigrations(db *sql.DB, migrationsDir string) error {
 	}
 
 	return nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
-func getEnvInt(key string, defaultValue int) int {
-	if value := os.Getenv(key); value != "" {
-		if intValue, err := strconv.Atoi(value); err == nil {
-			return intValue
-		}
-	}
-	return defaultValue
 }
