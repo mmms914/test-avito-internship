@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine
     container_name: booking-postgres
     env_file:
-      - .env
+      - .env.example
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
