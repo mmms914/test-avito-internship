@@ -15,7 +15,7 @@ type RoomRepository interface {
 }
 
 type Repository interface {
-	Create(ctx context.Context, schedule *domain.Schedule) (*domain.Schedule, error)
+	Create(ctx context.Context, schedule *domain.Schedule) error
 	ExistsForRoom(ctx context.Context, roomID uuid.UUID) (bool, error)
 }
 
@@ -25,14 +25,14 @@ type Service struct {
 }
 
 type Config struct {
-	RoomRepo RoomRepository
-	Repo     Repository
+	RoomRepo     RoomRepository
+	ScheduleRepo Repository
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
 		roomRepo: c.RoomRepo,
-		repo:     c.Repo,
+		repo:     c.ScheduleRepo,
 	}
 }
 func (s *Service) Create(ctx context.Context, specs *domain.ScheduleInitSpecs) (*domain.Schedule, error) {
@@ -64,10 +64,10 @@ func (s *Service) Create(ctx context.Context, specs *domain.ScheduleInitSpecs) (
 	}
 
 	schedule := domain.NewSchedule(domain.WithScheduleInitSpecs(specs))
-	createdSchedule, err := s.repo.Create(ctx, schedule)
-	if err != nil {
+
+	if err = s.repo.Create(ctx, schedule); err != nil {
 		return nil, fmt.Errorf("creating schedule: %w", err)
 	}
 
-	return createdSchedule, nil
+	return schedule, nil
 }

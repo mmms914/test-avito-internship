@@ -34,14 +34,14 @@ type Service struct {
 }
 
 type Config struct {
-	Repo         Repository
+	SlotRepo     Repository
 	ScheduleRepo ScheduleRepository
 	RoomRepo     RoomRepository
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
-		repo:         c.Repo,
+		repo:         c.SlotRepo,
 		scheduleRepo: c.ScheduleRepo,
 		roomRepo:     c.RoomRepo,
 	}

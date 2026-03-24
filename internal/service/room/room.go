@@ -10,7 +10,7 @@ import (
 
 type Repository interface {
 	GetAll(ctx context.Context) ([]*domain.Room, error)
-	Create(ctx context.Context, room *domain.Room) (*domain.Room, error)
+	Create(ctx context.Context, room *domain.Room) error
 }
 
 type Service struct {
@@ -41,10 +41,10 @@ func (s *Service) Create(ctx context.Context, specs *domain.RoomInitSpecs) (*dom
 	}
 
 	room := domain.NewRoom(domain.WithRoomInitSpecs(specs))
-	createdRoom, err := s.repo.Create(ctx, room)
-	if err != nil {
+
+	if err = s.repo.Create(ctx, room); err != nil {
 		return nil, fmt.Errorf("creating room: %w", err)
 	}
 
-	return createdRoom, nil
+	return room, nil
 }

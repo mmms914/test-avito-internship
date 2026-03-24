@@ -144,7 +144,7 @@ func TestService_Create(t *testing.T) {
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Schedule")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -169,7 +169,7 @@ func TestService_Create(t *testing.T) {
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Schedule")).
-					Return(&domain.Schedule{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -185,8 +185,8 @@ func TestService_Create(t *testing.T) {
 			}
 
 			s := schedule.NewService(&schedule.Config{
-				RoomRepo: m.roomRepo,
-				Repo:     m.repo,
+				RoomRepo:     m.roomRepo,
+				ScheduleRepo: m.repo,
 			})
 
 			_, err := s.Create(test.ctx, test.schedule)

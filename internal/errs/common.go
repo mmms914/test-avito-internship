@@ -10,6 +10,7 @@ const (
 	BookingNotFoundErrorCode   string = "BOOKING_NOT_FOUND"
 	ForbiddenErrorCode         string = "FORBIDDEN"
 	ScheduleExistsErrorCode    string = "SCHEDULE_EXISTS"
+	ScheduleNotFoundErrorCode  string = "SCHEDULE_NOT_FOUND"
 	InternalErrorCode          string = "INTERNAL_ERROR"
 )
 

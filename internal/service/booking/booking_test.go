@@ -28,7 +28,6 @@ type testMocks struct {
 
 	repo        *mocks.Repository
 	slotRepo    *mocks.SlotRepository
-	userRepo    *mocks.UserRepository
 	linkManager *mocks.LinkManager
 }
 
@@ -38,7 +37,6 @@ func newMocks(t *testing.T) *testMocks {
 
 		repo:        mocks.NewRepository(t),
 		slotRepo:    mocks.NewSlotRepository(t),
-		userRepo:    mocks.NewUserRepository(t),
 		linkManager: mocks.NewLinkManager(t),
 	}
 }
@@ -168,64 +166,6 @@ func TestService_Create(t *testing.T) {
 			},
 			expectedError: errs.ErrSlotAlreadyBooked,
 		},
-		"error getting user": {
-			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
-				domain.UserIDKey, uuid.UUID{}),
-			model: &dto.BookingCreateModel{
-				SlotID:               uuid.UUID{},
-				CreateConferenceLink: ptr.To(true),
-			},
-			setupMocks: func(m *testMocks) {
-				m.slotRepo.
-					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
-						&domain.SlotRestoreSpecs{
-							ID:        uuid.UUID{},
-							RoomID:    uuid.UUID{},
-							StartTime: time.Now().Add(time.Hour).UTC(),
-							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
-						})), nil).
-					Once()
-				m.repo.
-					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, nil).
-					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, errInternal).
-					Once()
-			},
-			expectedError: errInternal,
-		},
-		"user does not exist": {
-			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
-				domain.UserIDKey, uuid.UUID{}),
-			model: &dto.BookingCreateModel{
-				SlotID:               uuid.UUID{},
-				CreateConferenceLink: ptr.To(true),
-			},
-			setupMocks: func(m *testMocks) {
-				m.slotRepo.
-					On("GetByID", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(domain.NewSlot(domain.WithSlotRestoreSpecs(
-						&domain.SlotRestoreSpecs{
-							ID:        uuid.UUID{},
-							RoomID:    uuid.UUID{},
-							StartTime: time.Now().Add(time.Hour).UTC(),
-							EndTime:   time.Now().Add(2 * time.Hour).UTC(),
-						})), nil).
-					Once()
-				m.repo.
-					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, nil).
-					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(false, nil).
-					Once()
-			},
-			expectedError: errs.ErrUserNotFound,
-		},
 		"error creating conference link": {
 			ctx: context.WithValue(context.WithValue(context.Background(), domain.UserRoleKey, domain.UserRole),
 				domain.UserIDKey, uuid.UUID{}),
@@ -247,10 +187,6 @@ func TestService_Create(t *testing.T) {
 				m.repo.
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(false, nil).
-					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
 					Once()
 				m.linkManager.
 					On("Create", mock.Anything).
@@ -281,17 +217,13 @@ func TestService_Create(t *testing.T) {
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(false, nil).
 					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
-					Once()
 				m.linkManager.
 					On("Create", mock.Anything).
 					Return("link", nil).
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 				m.linkManager.
 					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
@@ -322,17 +254,13 @@ func TestService_Create(t *testing.T) {
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(false, nil).
 					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
-					Once()
 				m.linkManager.
 					On("Create", mock.Anything).
 					Return("link", nil).
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 				m.linkManager.
 					On("Cancel", mock.Anything, mock.AnythingOfType("string")).
@@ -366,17 +294,13 @@ func TestService_Create(t *testing.T) {
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(false, nil).
 					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
-					Once()
 				m.linkManager.
 					On("Create", mock.Anything).
 					Return("link", nil).
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
-					Return(&domain.Booking{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -403,17 +327,13 @@ func TestService_Create(t *testing.T) {
 					On("IsSlotAlreadyBooked", mock.Anything, mock.AnythingOfType("uuid.UUID")).
 					Return(false, nil).
 					Once()
-				m.userRepo.
-					On("Exists", mock.Anything, mock.AnythingOfType("uuid.UUID")).
-					Return(true, nil).
-					Once()
 				m.linkManager.
 					On("Create", mock.Anything).
 					Return("", errInternal).
 					Maybe()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Booking")).
-					Return(&domain.Booking{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -432,7 +352,6 @@ func TestService_Create(t *testing.T) {
 				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
-				UserRepo:    m.userRepo,
 				LinkManager: m.linkManager,
 			})
 
@@ -515,7 +434,6 @@ func TestService_List(t *testing.T) {
 				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
-				UserRepo:    m.userRepo,
 				LinkManager: m.linkManager,
 			})
 
@@ -581,7 +499,6 @@ func TestService_ListForUser(t *testing.T) {
 				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
-				UserRepo:    m.userRepo,
 				LinkManager: m.linkManager,
 			})
 
@@ -671,7 +588,7 @@ func TestService_Cancel(t *testing.T) {
 					Once()
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
-					Return(&domain.Booking{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -695,7 +612,7 @@ func TestService_Cancel(t *testing.T) {
 
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -719,7 +636,7 @@ func TestService_Cancel(t *testing.T) {
 
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
-					Return(&domain.Booking{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -747,7 +664,7 @@ func TestService_Cancel(t *testing.T) {
 					Once()
 				m.repo.
 					On("Update", mock.Anything, mock.AnythingOfType("*dto.BookingUpdateModel")).
-					Return(&domain.Booking{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -766,7 +683,6 @@ func TestService_Cancel(t *testing.T) {
 				Logger:      m.logger,
 				BookingRepo: m.repo,
 				SlotRepo:    m.slotRepo,
-				UserRepo:    m.userRepo,
 				LinkManager: m.linkManager,
 			})
 

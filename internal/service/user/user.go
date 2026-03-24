@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	Create(ctx context.Context, user *domain.User) (*domain.User, error)
+	Create(ctx context.Context, user *domain.User) error
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
 	ExistsByEmail(ctx context.Context, email string) (bool, error)
 }
@@ -25,13 +25,13 @@ type Service struct {
 }
 
 type Config struct {
-	Repo   Repository
-	Hasher Hasher
+	UserRepo Repository
+	Hasher   Hasher
 }
 
 func NewService(c *Config) *Service {
 	return &Service{
-		repo:   c.Repo,
+		repo:   c.UserRepo,
 		hasher: c.Hasher,
 	}
 }
@@ -57,12 +57,11 @@ func (s *Service) Register(ctx context.Context, specs *dto.UserCreateModel) (*do
 		Role:         specs.Role,
 	}))
 
-	createdUser, err := s.repo.Create(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("creating user: %w", err)
+	if dbErr := s.repo.Create(ctx, user); dbErr != nil {
+		return nil, fmt.Errorf("creating user: %w", dbErr)
 	}
 
-	return createdUser, nil
+	return user, nil
 }
 
 func (s *Service) Login(ctx context.Context, cred *dto.UserCredentials) (*domain.User, error) {

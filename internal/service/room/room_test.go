@@ -98,7 +98,7 @@ func TestService_Create(t *testing.T) {
 			setupMocks: func(m *testMocks) {
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Room")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -110,7 +110,7 @@ func TestService_Create(t *testing.T) {
 			setupMocks: func(m *testMocks) {
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.Room")).
-					Return(&domain.Room{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,

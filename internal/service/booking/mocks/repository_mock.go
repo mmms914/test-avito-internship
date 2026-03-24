@@ -19,33 +19,21 @@ type Repository struct {
 }
 
 // Create provides a mock function with given fields: ctx, _a1
-func (_m *Repository) Create(ctx context.Context, _a1 *domain.Booking) (*domain.Booking, error) {
+func (_m *Repository) Create(ctx context.Context, _a1 *domain.Booking) error {
 	ret := _m.Called(ctx, _a1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
-	var r0 *domain.Booking
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Booking) (*domain.Booking, error)); ok {
-		return rf(ctx, _a1)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Booking) *domain.Booking); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Booking) error); ok {
 		r0 = rf(ctx, _a1)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Booking)
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.Booking) error); ok {
-		r1 = rf(ctx, _a1)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // GetByID provides a mock function with given fields: ctx, bookingID
@@ -137,33 +125,21 @@ func (_m *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*d
 }
 
 // Update provides a mock function with given fields: ctx, bum
-func (_m *Repository) Update(ctx context.Context, bum *dto.BookingUpdateModel) (*domain.Booking, error) {
+func (_m *Repository) Update(ctx context.Context, bum *dto.BookingUpdateModel) error {
 	ret := _m.Called(ctx, bum)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
-	var r0 *domain.Booking
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingUpdateModel) (*domain.Booking, error)); ok {
-		return rf(ctx, bum)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingUpdateModel) *domain.Booking); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *dto.BookingUpdateModel) error); ok {
 		r0 = rf(ctx, bum)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Booking)
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *dto.BookingUpdateModel) error); ok {
-		r1 = rf(ctx, bum)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // NewRepository creates a new instance of Repository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

@@ -100,7 +100,7 @@ func TestService_Register(t *testing.T) {
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.User")).
-					Return(nil, errInternal).
+					Return(errInternal).
 					Once()
 			},
 			expectedError: errInternal,
@@ -122,7 +122,7 @@ func TestService_Register(t *testing.T) {
 					Once()
 				m.repo.
 					On("Create", mock.Anything, mock.AnythingOfType("*domain.User")).
-					Return(&domain.User{}, nil).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
@@ -138,8 +138,8 @@ func TestService_Register(t *testing.T) {
 			}
 
 			s := user.NewService(&user.Config{
-				Repo:   m.repo,
-				Hasher: m.hasher,
+				UserRepo: m.repo,
+				Hasher:   m.hasher,
 			})
 
 			_, err := s.Register(context.Background(), test.sp)
@@ -259,8 +259,8 @@ func TestService_Login(t *testing.T) {
 			}
 
 			s := user.NewService(&user.Config{
-				Repo:   m.repo,
-				Hasher: m.hasher,
+				UserRepo: m.repo,
+				Hasher:   m.hasher,
 			})
 
 			_, err := s.Login(context.Background(), test.cred)

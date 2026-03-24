@@ -58,3 +58,26 @@ func TestNewBooking_WithRestoreSpecs(t *testing.T) {
 	assert.Equal(t, conferenceLink, booking.ConferenceLink())
 	assert.Equal(t, createdAt, booking.CreatedAt())
 }
+
+func TestBooking_Cancel(t *testing.T) {
+	id := uuid.New()
+	slotID := uuid.New()
+	userID := uuid.New()
+	status := domain.ActiveBookingStatus
+	conferenceLink := ptr.To("link")
+	createdAt := time.Now().UTC()
+
+	booking := domain.NewBooking(
+		domain.WithBookingRestoreSpecs(&domain.BookingRestoreSpecs{
+			ID:             id,
+			SlotID:         slotID,
+			UserID:         userID,
+			Status:         status,
+			ConferenceLink: conferenceLink,
+			CreatedAt:      createdAt,
+		}),
+	)
+
+	booking.Cancel()
+	assert.Equal(t, domain.CancelledBookingStatus, booking.Status())
+}

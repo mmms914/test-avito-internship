@@ -9,9 +9,12 @@ type Logger struct {
 	mock.Mock
 }
 
-// Error provides a mock function with given fields: msg
-func (_m *Logger) Error(msg string) {
-	_m.Called(msg)
+// Error provides a mock function with given fields: msg, args
+func (_m *Logger) Error(msg string, args ...interface{}) {
+	var _ca []interface{}
+	_ca = append(_ca, msg)
+	_ca = append(_ca, args...)
+	_m.Called(_ca...)
 }
 
 // NewLogger creates a new instance of Logger. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

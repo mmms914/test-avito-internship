@@ -106,6 +106,10 @@ func (b *Booking) CreatedAt() time.Time {
 	return b.createdAt
 }
 
+func (b *Booking) Cancel() {
+	b.status = CancelledBookingStatus
+}
+
 func (bs BookingStatus) String() string {
 	return string(bs)
 }

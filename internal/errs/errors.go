@@ -11,4 +11,5 @@ var (
 	ErrBookingNotFound   = NewCustomError(BookingNotFoundErrorCode, "booking not found")
 	ErrForbidden         = NewCustomError(ForbiddenErrorCode, "forbidden")
 	ErrScheduleExists    = NewCustomError(ScheduleExistsErrorCode, "schedule already exists")
+	ErrScheduleNotExists = NewCustomError(ScheduleNotFoundErrorCode, "schedule does not exist")
 )

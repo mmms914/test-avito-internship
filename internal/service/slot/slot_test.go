@@ -240,7 +240,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 			s := slot.NewService(&slot.Config{
 				RoomRepo:     m.roomRepo,
 				ScheduleRepo: m.scheduleRepo,
-				Repo:         m.repo,
+				SlotRepo:     m.repo,
 			})
 
 			_, err := s.GetAvailableSlots(context.Background(), test.roomID, test.date)

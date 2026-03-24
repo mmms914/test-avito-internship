@@ -15,17 +15,13 @@ import (
 type Repository interface {
 	GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.Booking, error)
 	IsSlotAlreadyBooked(ctx context.Context, slotID uuid.UUID) (bool, error)
-	Create(ctx context.Context, booking *domain.Booking) (*domain.Booking, error)
+	Create(ctx context.Context, booking *domain.Booking) error
 	List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error)
-	Update(ctx context.Context, bum *dto.BookingUpdateModel) (*domain.Booking, error)
+	Update(ctx context.Context, bum *dto.BookingUpdateModel) error
 }
 
 type SlotRepository interface {
 	GetByID(ctx context.Context, slotID uuid.UUID) (*domain.Slot, error)
-}
-
-type UserRepository interface {
-	Exists(ctx context.Context, userID uuid.UUID) (bool, error)
 }
 
 type LinkManager interface {
@@ -34,7 +30,7 @@ type LinkManager interface {
 }
 
 type Logger interface {
-	Error(msg string)
+	Error(msg string, args ...any)
 }
 
 type Service struct {
@@ -42,7 +38,6 @@ type Service struct {
 
 	repo        Repository
 	slotRepo    SlotRepository
-	userRepo    UserRepository
 	linkManager LinkManager
 }
 
@@ -51,7 +46,6 @@ type Config struct {
 
 	BookingRepo Repository
 	SlotRepo    SlotRepository
-	UserRepo    UserRepository
 	LinkManager LinkManager
 }
 
@@ -61,7 +55,6 @@ func NewService(c *Config) *Service {
 
 		repo:        c.BookingRepo,
 		slotRepo:    c.SlotRepo,
-		userRepo:    c.UserRepo,
 		linkManager: c.LinkManager,
 	}
 }
@@ -94,15 +87,6 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 		return nil, errs.ErrSlotAlreadyBooked
 	}
 
-	userExists, err := s.userRepo.Exists(ctx, creds.ID)
-	if err != nil {
-		return nil, fmt.Errorf("checking if user exists: %w", err)
-	}
-
-	if !userExists {
-		return nil, errs.ErrUserNotFound
-	}
-
 	var conferenceLink *string
 	if booking.CreateConferenceLink != nil && *booking.CreateConferenceLink {
 		cLink, linkErr := s.linkManager.Create(ctx)
@@ -113,7 +97,7 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 		conferenceLink = &cLink
 	}
 
-	createdBooking, err := s.repo.Create(ctx, domain.NewBooking(domain.WithBookingRestoreSpecs(
+	createdBooking := domain.NewBooking(domain.WithBookingRestoreSpecs(
 		&domain.BookingRestoreSpecs{
 			ID:             uuid.New(),
 			SlotID:         booking.SlotID,
@@ -121,8 +105,9 @@ func (s *Service) Create(ctx context.Context, booking *dto.BookingCreateModel) (
 			Status:         domain.ActiveBookingStatus,
 			ConferenceLink: conferenceLink,
 			CreatedAt:      time.Now().UTC(),
-		})))
-	if err != nil {
+		}))
+
+	if err = s.repo.Create(ctx, createdBooking); err != nil {
 		// компенсирующее действие по удалению созданной ссылки
 		if conferenceLink != nil {
 			cancelErr := s.linkManager.Cancel(ctx, *conferenceLink)
@@ -209,10 +194,11 @@ func (s *Service) Cancel(ctx context.Context, bookingID uuid.UUID) (*domain.Book
 		Status: domain.CancelledBookingStatus,
 	}
 
-	updatedBooking, err := s.repo.Update(ctx, model)
-	if err != nil {
+	booking.Cancel()
+
+	if err = s.repo.Update(ctx, model); err != nil {
 		return nil, fmt.Errorf("updating booking: %w", err)
 	}
 
-	return updatedBooking, nil
+	return booking, nil
 }
