@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS slots (
 
 CREATE INDEX idx_slots_room_id ON slots(room_id);
 CREATE INDEX idx_slots_start_time ON slots(start_time);
-CREATE INDEX idx_slots_start_time ON slots(end_time);
+CREATE INDEX idx_slots_end_time ON slots(end_time);
 
 -- +goose Down
 DROP TABLE IF EXISTS slots;
