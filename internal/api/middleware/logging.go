@@ -33,7 +33,7 @@ func Logging(logger *slog.Logger) func(http.Handler) http.Handler {
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
 				slog.Int("status", wrapped.statusCode),
-				slog.Int("durationMicroseconds", int(time.Since(start).Microseconds())),
+				slog.Int("durationMs", int(time.Since(start).Milliseconds())),
 				slog.String("remote_addr", r.RemoteAddr),
 				slog.String("user_agent", r.UserAgent()),
 				slog.String("request_id", r.Header.Get("X-Request-ID")),
