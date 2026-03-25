@@ -9,6 +9,24 @@ type Hasher struct {
 	mock.Mock
 }
 
+// CompareHashAndPassword provides a mock function with given fields: hash, password
+func (_m *Hasher) CompareHashAndPassword(hash string, password string) error {
+	ret := _m.Called(hash, password)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CompareHashAndPassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(hash, password)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Hash provides a mock function with given fields: password
 func (_m *Hasher) Hash(password string) (string, error) {
 	ret := _m.Called(password)

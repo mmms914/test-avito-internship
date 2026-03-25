@@ -18,3 +18,7 @@ func (h *Hasher) Hash(text string) (string, error) {
 
 	return string(hashed), nil
 }
+
+func (h *Hasher) CompareHashAndPassword(hash string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}

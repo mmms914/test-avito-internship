@@ -17,6 +17,7 @@ type Repository interface {
 
 type Hasher interface {
 	Hash(password string) (string, error)
+	CompareHashAndPassword(hash string, password string) error
 }
 
 type Service struct {
@@ -70,16 +71,7 @@ func (s *Service) Login(ctx context.Context, cred *dto.UserCredentials) (*domain
 		return nil, fmt.Errorf("getting user: %w", err)
 	}
 
-	if user == nil {
-		return nil, errs.ErrUserNotFound
-	}
-
-	passHash, err := s.hasher.Hash(cred.Password)
-	if err != nil {
-		return nil, fmt.Errorf("hashing password: %w", err)
-	}
-
-	if passHash != user.PasswordHash() {
+	if err = s.hasher.CompareHashAndPassword(user.PasswordHash(), cred.Password); err != nil {
 		return nil, errs.ErrUnauthorized
 	}
 

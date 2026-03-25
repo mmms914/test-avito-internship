@@ -180,29 +180,12 @@ func TestService_Login(t *testing.T) {
 			setupMocks: func(m *testMocks) {
 				m.repo.
 					On("GetByEmail", mock.Anything, mock.AnythingOfType("string")).
-					Return(nil, nil).
+					Return(nil, errs.ErrUserNotFound).
 					Once()
 			},
 			expectedError: errs.ErrUserNotFound,
 		},
-		"error hashing password": {
-			cred: &dto.UserCredentials{
-				Email:    "mail@test.ru",
-				Password: "123",
-			},
-			setupMocks: func(m *testMocks) {
-				m.repo.
-					On("GetByEmail", mock.Anything, mock.AnythingOfType("string")).
-					Return(&domain.User{}, nil).
-					Once()
-				m.hasher.
-					On("Hash", mock.Anything, mock.AnythingOfType("string")).
-					Return("", errInternal).
-					Once()
-			},
-			expectedError: errInternal,
-		},
-		"hashes not equal": {
+		"wrong password": {
 			cred: &dto.UserCredentials{
 				Email:    "mail@test.ru",
 				Password: "123",
@@ -219,8 +202,9 @@ func TestService_Login(t *testing.T) {
 					})), nil).
 					Once()
 				m.hasher.
-					On("Hash", mock.Anything, mock.AnythingOfType("string")).
-					Return("321", nil).
+					On("CompareHashAndPassword", mock.Anything,
+						mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+					Return(errInternal).
 					Once()
 			},
 			expectedError: errs.ErrUnauthorized,
@@ -242,8 +226,9 @@ func TestService_Login(t *testing.T) {
 					})), nil).
 					Once()
 				m.hasher.
-					On("Hash", mock.Anything, mock.AnythingOfType("string")).
-					Return("123", nil).
+					On("CompareHashAndPassword", mock.Anything,
+						mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+					Return(nil).
 					Once()
 			},
 			expectedError: nil,
