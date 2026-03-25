@@ -7,8 +7,8 @@ import (
 )
 
 type CreateBookingRequest struct {
-	SlotID               *uuid.UUID `json:"slotId" validate:"required,uuid"`
-	CreateConferenceLink *bool      `json:"createConferenceLink"`
+	SlotID               *string `json:"slotId" validate:"required,uuid"`
+	CreateConferenceLink *bool   `json:"createConferenceLink"`
 }
 
 type ListBookingResponse struct {
@@ -28,7 +28,7 @@ type BookingObject struct {
 	SlotID         uuid.UUID `json:"slotId"`
 	UserID         uuid.UUID `json:"userId"`
 	Status         string    `json:"status"`
-	ConferenceLink *string   `json:"conferenceLink"`
+	ConferenceLink *string   `json:"conferenceLink,omitempty"`
 	CreatedAt      time.Time `json:"createdAt"`
 }
 

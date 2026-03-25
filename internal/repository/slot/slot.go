@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
@@ -70,7 +69,7 @@ func (r *Repository) GetByID(ctx context.Context, slotID uuid.UUID) (*domain.Slo
 		&specs.EndTime,
 	)
 
-	if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errs.ErrSlotNotFound
 	}
 	if err != nil {

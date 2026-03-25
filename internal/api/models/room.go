@@ -23,7 +23,7 @@ type RoomResponse struct {
 type RoomObject struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
-	Description *string   `json:"description"`
-	Capacity    *int      `json:"capacity"`
+	Description *string   `json:"description,omitempty"`
+	Capacity    *int      `json:"capacity,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
 }

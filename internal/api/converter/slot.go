@@ -14,11 +14,13 @@ func SlotToResponse(s *domain.Slot) *models.SlotObject {
 	}
 }
 
-func SlotArrayToResponse(s []*domain.Slot) []*models.SlotObject {
+func SlotArrayToResponse(s []*domain.Slot) *models.SlotsResponse {
 	res := make([]*models.SlotObject, len(s))
 	for i := range s {
 		res[i] = SlotToResponse(s[i])
 	}
 
-	return res
+	return &models.SlotsResponse{
+		Slots: res,
+	}
 }

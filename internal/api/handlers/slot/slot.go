@@ -61,7 +61,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handlers.WriteJSON(w, http.StatusCreated, converter.SlotArrayToResponse(slots))
+	handlers.WriteJSON(w, http.StatusOK, converter.SlotArrayToResponse(slots))
 }
 
 func (h *Handler) handleServiceError(w http.ResponseWriter, err error) {

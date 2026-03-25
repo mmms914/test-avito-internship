@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
@@ -71,7 +72,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdBooking, err := h.service.Create(r.Context(), &dto.BookingCreateModel{
-		SlotID:               *req.SlotID,
+		SlotID:               uuid.MustParse(*req.SlotID),
 		CreateConferenceLink: req.CreateConferenceLink,
 	})
 	if err != nil {
@@ -154,10 +155,10 @@ func (h *Handler) Cancel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookingIDStr := r.URL.Query().Get("bookingID")
+	bookingIDStr := chi.URLParam(r, "bookingId")
 	bookingID, err := uuid.Parse(bookingIDStr)
 	if err != nil {
-		handlers.WriteError(w, models.InvalidRequestErrorCode, "bookingID must be uuid", http.StatusBadRequest)
+		handlers.WriteError(w, models.InvalidRequestErrorCode, "bookingId must be uuid", http.StatusBadRequest)
 		return
 	}
 

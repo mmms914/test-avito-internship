@@ -13,6 +13,6 @@ type SlotsResponse struct {
 type SlotObject struct {
 	ID        uuid.UUID `json:"id"`
 	RoomID    uuid.UUID `json:"roomId"`
-	StartTime time.Time `json:"startTime"`
-	EndTime   time.Time `json:"endTime"`
+	StartTime time.Time `json:"start"`
+	EndTime   time.Time `json:"end"`
 }

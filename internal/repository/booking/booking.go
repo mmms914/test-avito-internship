@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
@@ -45,7 +44,7 @@ func (r *Repository) GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.
 		&specs.CreatedAt,
 	)
 
-	if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errs.ErrBookingNotFound
 	}
 	if err != nil {
@@ -92,7 +91,7 @@ func (r *Repository) Create(ctx context.Context, booking *domain.Booking) error 
 
 func (r *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
 	query := `
-        SELECT id, slot_id, user_id, status, conference_link, created_at, updated_at
+        SELECT id, slot_id, user_id, status, conference_link, created_at
         FROM bookings
         WHERE 1=1
     `
@@ -156,7 +155,7 @@ func (r *Repository) Update(ctx context.Context, model *dto.BookingUpdateModel) 
 		model.ID,
 	)
 
-	if errors.Is(err, pgx.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) {
 		return errs.ErrBookingNotFound
 	}
 
