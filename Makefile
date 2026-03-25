@@ -1,4 +1,4 @@
-.PHONY: help lint mock test e2e-down e2e-up e2e-test e2e-test-coverage all-tests
+.PHONY: help lint mock test e2e-down e2e-up e2e-test e2e-test-coverage all-tests load-test
 
 E2E_COMPOSE_FILE := docker-compose.e2e.yaml
 
@@ -42,3 +42,11 @@ all-tests: ## Запустить все тесты (юнит и e2e)
 	$(MAKE) unit-test
 	@echo "Running E2E tests..."
 	$(MAKE) e2e-up-test-down
+
+load-test:
+	$(MAKE) e2e-up
+	@echo "Running load test..."
+	go test -v -tags=load -run TestLoad ./test/load/... -timeout 10m; \
+	EXIT_CODE=$$?; \
+	$(MAKE) e2e-down; \
+	exit $$EXIT_CODE
