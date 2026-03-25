@@ -89,29 +89,35 @@ func (r *Repository) Create(ctx context.Context, booking *domain.Booking) error 
 	return err
 }
 
-func (r *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
+func (r *Repository) ListActive(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
 	query := `
-        SELECT id, slot_id, user_id, status, conference_link, created_at
-        FROM bookings
-        WHERE 1=1
+        SELECT b.id as id,
+               b.slot_id as slot_id, 
+               b.user_id as user_id,
+               b.status as status, 
+               b.conference_link as conference_link,
+               b.created_at as created_at
+        FROM bookings b 
+        JOIN slots s ON b.slot_id = s.id
+        WHERE b.status = 'active'
     `
 	args := []any{}
 	argIndex := 1
 
 	if filter.UserID != nil {
-		query += fmt.Sprintf(" AND user_id = $%d", argIndex)
+		query += fmt.Sprintf(" AND b.user_id = $%d", argIndex)
 		args = append(args, *filter.UserID)
 		argIndex++
 	}
 
 	if filter.Time != nil {
-		query += fmt.Sprintf(" AND start_time >= $%d", argIndex)
+		query += fmt.Sprintf(" AND s.start_time >= $%d", argIndex)
 		args = append(args, *filter.Time)
 		argIndex++
 	}
 
 	// Сортировка и пагинация
-	query += " ORDER BY created_at DESC"
+	query += " ORDER BY b.created_at DESC"
 
 	if filter.Page != nil && filter.PageSize != nil {
 		offset := (*filter.Page - 1) * *filter.PageSize

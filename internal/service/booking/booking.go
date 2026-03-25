@@ -17,7 +17,7 @@ type Repository interface {
 	GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.Booking, error)
 	IsSlotAlreadyBooked(ctx context.Context, slotID uuid.UUID) (bool, error)
 	Create(ctx context.Context, booking *domain.Booking) error
-	List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error)
+	ListActive(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error)
 	Update(ctx context.Context, bum *dto.BookingUpdateModel) error
 }
 
@@ -133,7 +133,7 @@ func (s *Service) List(ctx context.Context, filter *dto.BookingFilter) ([]*domai
 		return nil, errs.ErrForbidden
 	}
 
-	bookings, err := s.repo.List(ctx, filter)
+	bookings, err := s.repo.ListActive(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("listing bookings: %w", err)
 	}
@@ -156,7 +156,7 @@ func (s *Service) ListForUser(ctx context.Context) ([]*domain.Booking, error) {
 		Time:   ptr.To(time.Now().UTC()),
 	}
 
-	bookings, err := s.repo.List(ctx, filter)
+	bookings, err := s.repo.ListActive(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("listing bookings: %w", err)
 	}

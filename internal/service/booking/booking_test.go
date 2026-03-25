@@ -399,7 +399,7 @@ func TestService_List(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.repo.
-					On("List", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
+					On("ListActive", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
 					Return([]*domain.Booking{}, errInternal).
 					Once()
 			},
@@ -414,7 +414,7 @@ func TestService_List(t *testing.T) {
 			},
 			setupMocks: func(m *testMocks) {
 				m.repo.
-					On("List", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
+					On("ListActive", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
 					Return([]*domain.Booking{}, nil).
 					Once()
 			},
@@ -468,7 +468,7 @@ func TestService_ListForUser(t *testing.T) {
 				domain.UserIDKey, uuid.UUID{}),
 			setupMocks: func(m *testMocks) {
 				m.repo.
-					On("List", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
+					On("ListActive", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
 					Return(nil, errInternal).
 					Once()
 			},
@@ -479,7 +479,7 @@ func TestService_ListForUser(t *testing.T) {
 				domain.UserIDKey, uuid.UUID{}),
 			setupMocks: func(m *testMocks) {
 				m.repo.
-					On("List", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
+					On("ListActive", mock.Anything, mock.AnythingOfType("*dto.BookingFilter")).
 					Return([]*domain.Booking{}, nil).
 					Once()
 			},

@@ -94,12 +94,12 @@ func (_m *Repository) IsSlotAlreadyBooked(ctx context.Context, slotID uuid.UUID)
 	return r0, r1
 }
 
-// List provides a mock function with given fields: ctx, filter
-func (_m *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
+// ListActive provides a mock function with given fields: ctx, filter
+func (_m *Repository) ListActive(ctx context.Context, filter *dto.BookingFilter) ([]*domain.Booking, error) {
 	ret := _m.Called(ctx, filter)
 
 	if len(ret) == 0 {
-		panic("no return value specified for List")
+		panic("no return value specified for ListActive")
 	}
 
 	var r0 []*domain.Booking
