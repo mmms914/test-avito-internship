@@ -162,12 +162,20 @@ func (r *Repository) Update(ctx context.Context, model *dto.BookingUpdateModel) 
         WHERE id = $2
     `
 
-	_, err := r.db.ExecContext(ctx, query,
+	res, err := r.db.ExecContext(ctx, query,
 		model.Status.String(),
 		model.ID,
 	)
+	if err != nil {
+		return fmt.Errorf("failed to update bookings: %w", err)
+	}
 
-	if errors.Is(err, sql.ErrNoRows) {
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to check if updated: %w", err)
+	}
+
+	if rowsAffected == 0 {
 		return errs.ErrBookingNotFound
 	}
 
