@@ -2,8 +2,7 @@ services:
   postgres_test:
     image: postgres:16-alpine
     container_name: booking-postgres-e2e
-    env_file:
-      - .env.example
+    env_file: .env.example
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -23,8 +22,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: booking-app-e2e
-    env_file:
-      - .env.example
+    env_file: .env.example
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
