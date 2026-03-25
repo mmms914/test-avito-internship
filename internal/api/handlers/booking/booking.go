@@ -54,6 +54,22 @@ func NewHandler(c *HandlerConfig) *Handler {
 	}
 }
 
+// Create godoc
+// @Summary      Создать бронь
+// @Description  Создание брони на слот (только user)
+// @Tags         bookings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.CreateBookingRequest true "Данные брони"
+// @Success      201 {object} models.BookingResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Failure      409 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /bookings/create [post]
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckUserRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)
@@ -83,6 +99,21 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	handlers.WriteJSON(w, http.StatusCreated, converter.BookingToResponse(createdBooking))
 }
 
+// List godoc
+// @Summary      Все брони
+// @Description  Получить список всех броней с пагинацией (только admin)
+// @Tags         bookings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        page query int false "Номер страницы" default(1)
+// @Param        pageSize query int false "Размер страницы" default(20) maximum(100)
+// @Success      200 {object} models.ListBookingResponseWithPag
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /bookings/list [get]
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckAdminRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode, "admin role required", http.StatusForbidden)
@@ -133,6 +164,18 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		}))
 }
 
+// ListMy godoc
+// @Summary      Мои брони
+// @Description  Получить список броней текущего пользователя (только user)
+// @Tags         bookings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.ListBookingResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /bookings/my [get]
 func (h *Handler) ListMy(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckUserRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)
@@ -148,6 +191,21 @@ func (h *Handler) ListMy(w http.ResponseWriter, r *http.Request) {
 	handlers.WriteJSON(w, http.StatusOK, converter.BookingArrayToListResponse(bookings))
 }
 
+// Cancel godoc
+// @Summary      Отменить бронь
+// @Description  Отмена брони (только user, идемпотентно)
+// @Tags         bookings
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        bookingId path string true "ID брони"
+// @Success      200 {object} models.BookingResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /bookings/{bookingId}/cancel [post]
 func (h *Handler) Cancel(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckUserRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode, "user role required", http.StatusForbidden)

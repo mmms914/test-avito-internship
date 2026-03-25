@@ -54,6 +54,17 @@ func NewHandler(c *HandlerConfig) *Handler {
 	}
 }
 
+// DummyLogin godoc
+// @Summary      Тестовый логин
+// @Description  Получить JWT токен по роли (admin/user)
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body models.DummyLoginRequest true "Роль пользователя"
+// @Success      200 {object} models.LoginResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /dummyLogin [post]
 func (h *Handler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 	var req models.DummyLoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -85,6 +96,18 @@ func (h *Handler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 	handlers.WriteJSON(w, http.StatusOK, models.LoginResponse{Token: token})
 }
 
+// Login godoc
+// @Summary      Авторизация
+// @Description  Авторизация по email и паролю
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body models.LoginRequest true "Учетные данные"
+// @Success      200 {object} models.LoginResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /login [post]
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var req models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -118,6 +141,17 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	handlers.WriteJSON(w, http.StatusOK, models.LoginResponse{Token: token})
 }
 
+// Register godoc
+// @Summary      Регистрация
+// @Description  Регистрация нового пользователя
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body models.RegisterRequest true "Данные для регистрации"
+// @Success      201 {object} models.UserResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /register [post]
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var req models.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

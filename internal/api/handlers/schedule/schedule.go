@@ -48,6 +48,23 @@ func NewHandler(c *HandlerConfig) *Handler {
 	}
 }
 
+// Create godoc
+// @Summary      Создать расписание
+// @Description  Создание расписания для переговорки (только admin)
+// @Tags         schedules
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        roomId path string true "ID переговорки"
+// @Param        request body models.CreateScheduleRequest true "Данные расписания"
+// @Success      201 {object} models.ScheduleResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Failure      409 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /rooms/{roomId}/schedule/create [post]
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckAdminRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode, "admin role required", http.StatusForbidden)

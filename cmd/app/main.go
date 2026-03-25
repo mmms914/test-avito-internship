@@ -36,6 +36,17 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/user"
 )
 
+// @title           Room Booking Service API
+// @version         1.0.0
+// @description     Сервис бронирования переговорок
+
+// @host      localhost:8080
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+
 func main() {
 	appConfig, err := config.LoadConfig("./cmd/config/config.yaml")
 	if err != nil {

@@ -42,6 +42,21 @@ func NewHandler(c *HandlerConfig) *Handler {
 	}
 }
 
+// List godoc
+// @Summary      Доступные слоты
+// @Description  Получить доступные для бронирования слоты по переговорке и дате
+// @Tags         slots
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        roomId path string true "ID переговорки"
+// @Param        date query string true "Дата в формате YYYY-MM-DD"
+// @Success      200 {object} models.SlotsResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      404 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /rooms/{roomId}/slots/list [get]
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	roomIDStr := chi.URLParam(r, "roomId")
 	roomID, err := uuid.Parse(roomIDStr)

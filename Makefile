@@ -25,6 +25,7 @@ help:
 	@echo "    mock                   - Сгенерировать моки"
 	@echo "    clean                  - Очистить артефакты"
 	@echo "    seed                   - Заполнение локальной базы данных тестовыми данными"
+	@echo "    swag                   - Генерация Swagger-контракта"
 	@echo ""
 	@echo "  CI/CD:"
 	@echo "    ci                     - Запустить CI пайплайн (clean + lint + mock + test-all)"
@@ -127,3 +128,8 @@ down:
 seed:
 	@echo "Seeding local db..."
 	@go run cmd/seed/main.go
+
+swag:
+	@echo "Generating Swagger docs..."
+	@go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/app/main.go -o docs
+	@echo "Swagger docs generated at docs/"

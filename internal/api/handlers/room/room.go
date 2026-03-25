@@ -47,6 +47,20 @@ func NewHandler(c *HandlerConfig) *Handler {
 	}
 }
 
+// Create godoc
+// @Summary      Создать переговорку
+// @Description  Создание новой переговорки (только admin)
+// @Tags         rooms
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request body models.CreateRoomRequest true "Данные переговорки"
+// @Success      201 {object} models.RoomResponse
+// @Failure      400 {object} models.ErrorResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      403 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /rooms/create [post]
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err := handlers.CheckAdminRole(r); err != nil {
 		handlers.WriteError(w, models.ForbiddenErrorCode,
@@ -78,6 +92,17 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	handlers.WriteJSON(w, http.StatusCreated, converter.RoomToResponse(createdRoom))
 }
 
+// List godoc
+// @Summary      Список переговорок
+// @Description  Получить список всех переговорок
+// @Tags         rooms
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} models.ListRoomResponse
+// @Failure      401 {object} models.ErrorResponse
+// @Failure      500 {object} models.ErrorResponse
+// @Router       /rooms/list [get]
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	rooms, err := h.service.GetAll(r.Context())
 	if err != nil {
