@@ -25,10 +25,9 @@ import (
 )
 
 func TestHandler_DummyLogin(t *testing.T) {
-
 	tests := map[string]struct {
 		name           string
-		requestBody    interface{}
+		requestBody    any
 		expectedStatus int
 		expectedCode   string
 		checkResponse  func(t *testing.T, body []byte)
@@ -127,7 +126,7 @@ func TestHandler_DummyLogin(t *testing.T) {
 
 func TestHandler_Login(t *testing.T) {
 	tests := map[string]struct {
-		requestBody    interface{}
+		requestBody    any
 		setupMock      func(*mocks.Service)
 		expectedStatus int
 		expectedCode   string
@@ -331,7 +330,7 @@ func TestHandler_Login(t *testing.T) {
 
 func TestHandler_Register(t *testing.T) {
 	tests := map[string]struct {
-		requestBody    interface{}
+		requestBody    any
 		setupMock      func(*mocks.Service)
 		expectedStatus int
 		expectedCode   string

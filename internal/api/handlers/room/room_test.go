@@ -25,7 +25,7 @@ import (
 
 func TestHandler_Create(t *testing.T) {
 	tests := map[string]struct {
-		requestBody    interface{}
+		requestBody    any
 		setupMock      func(*mocks.Service)
 		expectedStatus int
 		expectedCode   string
