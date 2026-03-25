@@ -5,7 +5,7 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 )
 
-func SlotToResponse(s *domain.Slot) *models.SlotObject {
+func SlotToObject(s *domain.Slot) *models.SlotObject {
 	return &models.SlotObject{
 		ID:        s.ID(),
 		RoomID:    s.RoomID(),
@@ -17,7 +17,7 @@ func SlotToResponse(s *domain.Slot) *models.SlotObject {
 func SlotArrayToResponse(s []*domain.Slot) *models.SlotsResponse {
 	res := make([]*models.SlotObject, len(s))
 	for i := range s {
-		res[i] = SlotToResponse(s[i])
+		res[i] = SlotToObject(s[i])
 	}
 
 	return &models.SlotsResponse{

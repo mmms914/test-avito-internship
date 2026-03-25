@@ -124,14 +124,13 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handlers.WriteJSON(w, http.StatusOK, models.ListBookingResponseWithPagination{
-		Bookings: converter.BookingArrayToResponse(bookings),
-		Pagination: &models.Pagination{
+	handlers.WriteJSON(w, http.StatusOK, converter.BookingArrayToListResponseWithPag(
+		bookings,
+		&models.Pagination{
 			Page:     pageInt,
 			PageSize: pageSizeInt,
 			Total:    len(bookings),
-		},
-	})
+		}))
 }
 
 func (h *Handler) ListMy(w http.ResponseWriter, r *http.Request) {
@@ -146,7 +145,7 @@ func (h *Handler) ListMy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handlers.WriteJSON(w, http.StatusOK, converter.BookingArrayToResponse(bookings))
+	handlers.WriteJSON(w, http.StatusOK, converter.BookingArrayToListResponse(bookings))
 }
 
 func (h *Handler) Cancel(w http.ResponseWriter, r *http.Request) {
@@ -187,6 +186,8 @@ func (h *Handler) handleServiceError(w http.ResponseWriter, err error) {
 		handlers.WriteError(w, models.SlotNotFoundErrorCode, "slot not found", http.StatusNotFound)
 	case errors.Is(err, errs.ErrSlotAlreadyBooked):
 		handlers.WriteError(w, models.SlotAlreadyBookedErrorCode, "slot already booked", http.StatusConflict)
+	case errors.Is(err, errs.ErrSlotTimeInPast):
+		handlers.WriteError(w, models.InvalidRequestErrorCode, "slot time in past", http.StatusBadRequest)
 	default:
 		h.logger.Error("Unexpected error", "error", err)
 		handlers.WriteError(w, models.InternalErrorCode, "internal server error", http.StatusInternalServerError)

@@ -6,6 +6,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type UserResponse struct {
+	User *UserObject `json:"user"`
+}
+
 type UserObject struct {
 	ID        uuid.UUID `json:"id"`
 	Email     string    `json:"email"`

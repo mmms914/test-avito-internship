@@ -18,7 +18,13 @@ func UserRoleFromString(strRole string) (domain.Role, error) {
 	}
 }
 
-func UserToResponse(u *domain.User) *models.UserObject {
+func UserToResponse(u *domain.User) *models.UserResponse {
+	return &models.UserResponse{
+		User: UserToObject(u),
+	}
+}
+
+func UserToObject(u *domain.User) *models.UserObject {
 	return &models.UserObject{
 		ID:        u.ID(),
 		Email:     u.Email(),

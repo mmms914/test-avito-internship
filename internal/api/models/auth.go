@@ -18,7 +18,3 @@ type RegisterRequest struct {
 	Password *string `json:"password" validate:"required"`
 	Role     *string `json:"role" validate:"required,oneof=admin user"`
 }
-
-type RegisterResponse struct {
-	User *UserObject `json:"user"`
-}

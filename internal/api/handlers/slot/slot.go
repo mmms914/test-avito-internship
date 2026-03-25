@@ -13,11 +13,12 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 )
 
 type Service interface {
-	GetAvailableSlots(ctx context.Context, roomID uuid.UUID, date time.Time) ([]*domain.Slot, error)
+	GetAvailableSlots(ctx context.Context, f *dto.SlotFilter) ([]*domain.Slot, error)
 }
 
 type Logger interface {
@@ -55,7 +56,12 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slots, err := h.service.GetAvailableSlots(r.Context(), roomID, date)
+	f := &dto.SlotFilter{
+		RoomID: roomID,
+		Date:   date,
+	}
+
+	slots, err := h.service.GetAvailableSlots(r.Context(), f)
 	if err != nil {
 		h.handleServiceError(w, err)
 		return

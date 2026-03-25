@@ -156,7 +156,9 @@ func (h *Handler) handleServiceError(w http.ResponseWriter, err error) {
 	case errors.Is(err, errs.ErrUnauthorized):
 		handlers.WriteError(w, models.UnauthorizedErrorCode, "unauthorized", http.StatusUnauthorized)
 	case errors.Is(err, errs.ErrUserNotFound):
-		handlers.WriteError(w, models.NotFoundErrorCode, "user not found", http.StatusNotFound)
+		handlers.WriteError(w, models.UnauthorizedErrorCode, "user not found", http.StatusUnauthorized)
+	case errors.Is(err, errs.ErrUserAlreadyExists):
+		handlers.WriteError(w, models.InvalidRequestErrorCode, "user not found", http.StatusBadRequest)
 	default:
 		h.logger.Error("Unexpected error", "error", err)
 		handlers.WriteError(w, models.InternalErrorCode, "internal server error", http.StatusInternalServerError)

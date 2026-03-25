@@ -7,11 +7,11 @@ import (
 
 func BookingToResponse(b *domain.Booking) *models.BookingResponse {
 	return &models.BookingResponse{
-		Booking: BookingToResponseObject(b),
+		Booking: BookingToObject(b),
 	}
 }
 
-func BookingToResponseObject(b *domain.Booking) *models.BookingObject {
+func BookingToObject(b *domain.Booking) *models.BookingObject {
 	return &models.BookingObject{
 		ID:             b.ID(),
 		SlotID:         b.SlotID(),
@@ -22,10 +22,23 @@ func BookingToResponseObject(b *domain.Booking) *models.BookingObject {
 	}
 }
 
-func BookingArrayToResponse(b []*domain.Booking) []*models.BookingObject {
+func BookingArrayToListResponse(b []*domain.Booking) *models.ListBookingResponse {
+	return &models.ListBookingResponse{
+		Bookings: BookingArrayToObjects(b),
+	}
+}
+
+func BookingArrayToListResponseWithPag(b []*domain.Booking, p *models.Pagination) *models.ListBookingResponseWithPag {
+	return &models.ListBookingResponseWithPag{
+		Bookings:   BookingArrayToObjects(b),
+		Pagination: p,
+	}
+}
+
+func BookingArrayToObjects(b []*domain.Booking) []*models.BookingObject {
 	res := make([]*models.BookingObject, len(b))
 	for i := range b {
-		res[i] = BookingToResponseObject(b[i])
+		res[i] = BookingToObject(b[i])
 	}
 
 	return res

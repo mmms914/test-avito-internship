@@ -17,7 +17,7 @@ func StringHourMinuteToTime(timeStr *string) (time.Duration, error) {
 
 func TimeHourMinuteToString(timeDur time.Duration) string {
 	hours := int(timeDur.Hours())
-	minutes := int(timeDur.Minutes())
+	minutes := int(timeDur.Minutes()) % 60 //nolint:mnd // obviously
 
 	return fmt.Sprintf("%02d:%02d", hours, minutes)
 }

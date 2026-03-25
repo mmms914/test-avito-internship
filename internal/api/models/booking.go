@@ -15,7 +15,7 @@ type ListBookingResponse struct {
 	Bookings []*BookingObject `json:"bookings"`
 }
 
-type ListBookingResponseWithPagination struct {
+type ListBookingResponseWithPag struct {
 	Bookings   []*BookingObject `json:"bookings"`
 	Pagination *Pagination      `json:"pagination"`
 }
