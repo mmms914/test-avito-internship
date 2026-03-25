@@ -23,14 +23,14 @@ func main() {
 	// Подключение к БД
 	db, err := postgres.Connect(ctx, &postgres.Config{
 		Host:               "localhost",
-		Port:               5432,
+		Port:               5432, //nolint:mnd // seeding
 		User:               "postgres",
 		Password:           "postgres",
 		DBName:             "myapp",
 		SSLMode:            "disable",
-		ConnectTimeout:     10 * time.Second,
-		MaxConnections:     5,
-		MaxIdleConnections: 5,
+		ConnectTimeout:     10 * time.Second, //nolint:mnd // seeding
+		MaxConnections:     5,                //nolint:mnd // seeding
+		MaxIdleConnections: 5,                //nolint:mnd // seeding
 		MaxConnLifetime:    time.Minute,
 	})
 	if err != nil {
@@ -42,7 +42,7 @@ func main() {
 	log.Println("Cleaning existing data...")
 	tables := []string{"bookings", "slots", "schedules", "rooms", "users"}
 	for _, table := range tables {
-		_, err := db.ExecContext(ctx, "DELETE FROM "+table)
+		_, err = db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s", table))
 		if err != nil {
 			log.Printf("Failed to clean table %s: %v", table, err)
 		}
@@ -108,7 +108,8 @@ func createUsers(db *sql.DB) []*domain.User {
 
 	for _, u := range users {
 		query := `INSERT INTO users (id, email, password, role, created_at) VALUES ($1, $2, $3, $4, $5)`
-		_, err := db.Exec(query, u.ID(), u.Email(), u.PasswordHash(), u.Role().String(), u.CreatedAt())
+		_, err := db.ExecContext(context.Background(), query, u.ID(), u.Email(),
+			u.PasswordHash(), u.Role().String(), u.CreatedAt())
 		if err != nil {
 			log.Printf("Failed to create user %s: %v", u.Email(), err)
 		}
@@ -123,28 +124,28 @@ func createRooms(db *sql.DB) []*domain.Room {
 			ID:          uuid.New(),
 			Name:        "Конференц-зал А",
 			Description: ptr.To("Большой зал с проектором, до 20 человек"),
-			Capacity:    ptr.To(20),
+			Capacity:    ptr.To(20), //nolint:mnd // seeding
 			CreatedAt:   time.Now().UTC(),
 		})),
 		domain.NewRoom(domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
 			ID:          uuid.New(),
 			Name:        "Переговорная Б",
 			Description: ptr.To("Средний зал для совещаний, до 10 человек"),
-			Capacity:    ptr.To(10),
+			Capacity:    ptr.To(10), //nolint:mnd // seeding
 			CreatedAt:   time.Now().UTC(),
 		})),
 		domain.NewRoom(domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
 			ID:          uuid.New(),
 			Name:        "Кабинет В",
 			Description: ptr.To("Маленькая комната для переговоров, до 5 человек"),
-			Capacity:    ptr.To(5),
+			Capacity:    ptr.To(5), //nolint:mnd // seeding
 			CreatedAt:   time.Now().UTC(),
 		})),
 		domain.NewRoom(domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
 			ID:          uuid.New(),
 			Name:        "Зал для презентаций",
 			Description: ptr.To("Специальное оборудование для презентаций"),
-			Capacity:    ptr.To(30),
+			Capacity:    ptr.To(30), //nolint:mnd // seeding
 			CreatedAt:   time.Now().UTC(),
 		})),
 		domain.NewRoom(domain.WithRoomRestoreSpecs(&domain.RoomRestoreSpecs{
@@ -158,7 +159,7 @@ func createRooms(db *sql.DB) []*domain.Room {
 
 	for _, r := range rooms {
 		query := `INSERT INTO rooms (id, name, description, capacity, created_at) VALUES ($1, $2, $3, $4, $5)`
-		_, err := db.Exec(query, r.ID(), r.Name(), r.Description(), r.Capacity(), r.CreatedAt())
+		_, err := db.ExecContext(context.Background(), query, r.ID(), r.Name(), r.Description(), r.Capacity(), r.CreatedAt())
 		if err != nil {
 			log.Printf("Failed to create room %s: %v", r.Name(), err)
 		}
@@ -179,8 +180,8 @@ func createSchedules(db *sql.DB, rooms []*domain.Room) []*domain.Schedule {
 			ID:         uuid.New(),
 			RoomID:     room.ID(),
 			DaysOfWeek: weekdays,
-			StartTime:  9 * time.Hour,
-			EndTime:    18 * time.Hour,
+			StartTime:  9 * time.Hour,  //nolint:mnd // seeding
+			EndTime:    18 * time.Hour, //nolint:mnd // seeding
 		}))
 		schedules = append(schedules, schedule)
 	}
@@ -189,15 +190,16 @@ func createSchedules(db *sql.DB, rooms []*domain.Room) []*domain.Schedule {
 		ID:         uuid.New(),
 		RoomID:     rooms[3].ID(),
 		DaysOfWeek: []time.Weekday{time.Saturday, time.Sunday},
-		StartTime:  10 * time.Hour,
-		EndTime:    16 * time.Hour,
+		StartTime:  10 * time.Hour, //nolint:mnd // seeding
+		EndTime:    16 * time.Hour, //nolint:mnd // seeding
 	}))
 	schedules = append(schedules, scheduleWeekend)
 
 	for _, s := range schedules {
 		query := `INSERT INTO schedules (id, room_id, days_of_week, start_time, end_time) VALUES ($1, $2, $3, $4, $5)`
 		daysOfWeek := converter.WeekdaysToIntArray(s.DaysOfWeek())
-		_, err := db.Exec(query, s.ID(), s.RoomID(), daysOfWeek, converter.DurationToStringTime(s.StartTime()), converter.DurationToStringTime(s.EndTime()))
+		_, err := db.ExecContext(context.Background(), query, s.ID(), s.RoomID(), daysOfWeek,
+			converter.DurationToStringTime(s.StartTime()), converter.DurationToStringTime(s.EndTime()))
 		if err != nil {
 			log.Printf("Failed to create schedule for room %s: %v", s.RoomID(), err)
 		}
@@ -210,7 +212,7 @@ func createSlots(db *sql.DB, schedules []*domain.Schedule) []*domain.Slot {
 	allSlots := []*domain.Slot{}
 
 	for i := 1; i <= 14; i++ {
-		date := time.Now().UTC().Add(time.Duration(i) * 24 * time.Hour).Truncate(24 * time.Hour)
+		date := time.Now().UTC().Add(time.Duration(i) * 24 * time.Hour).Truncate(24 * time.Hour) //nolint:mnd // 1 day
 
 		for _, schedule := range schedules {
 			if !schedule.IsAppliedForDate(date) {
@@ -226,17 +228,17 @@ func createSlots(db *sql.DB, schedules []*domain.Schedule) []*domain.Slot {
 					ID:        uuid.New(),
 					RoomID:    schedule.RoomID(),
 					StartTime: current,
-					EndTime:   current.Add(30 * time.Minute),
+					EndTime:   current.Add(domain.SlotDuration),
 				}))
 				allSlots = append(allSlots, slot)
-				current = current.Add(30 * time.Minute)
+				current = current.Add(domain.SlotDuration)
 			}
 		}
 	}
 
 	for _, slot := range allSlots {
 		query := `INSERT INTO slots (id, room_id, start_time, end_time) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING`
-		_, err := db.Exec(query, slot.ID(), slot.RoomID(), slot.StartTime(), slot.EndTime())
+		_, err := db.ExecContext(context.Background(), query, slot.ID(), slot.RoomID(), slot.StartTime(), slot.EndTime())
 		if err != nil {
 			log.Printf("Failed to create slot: %v", err)
 		}
@@ -265,7 +267,8 @@ func createBookings(db *sql.DB, slots []*domain.Slot, users []*domain.User) {
 		}))
 
 		query := `INSERT INTO bookings (id, slot_id, user_id, status, created_at) VALUES ($1, $2, $3, $4, $5)`
-		_, err := db.Exec(query, booking.ID(), booking.SlotID(), booking.UserID(), booking.Status().String(), booking.CreatedAt())
+		_, err := db.ExecContext(context.Background(), query, booking.ID(), booking.SlotID(),
+			booking.UserID(), booking.Status().String(), booking.CreatedAt())
 		if err != nil {
 			log.Printf("Failed to create booking: %v", err)
 		} else {
