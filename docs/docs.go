@@ -1008,7 +1008,7 @@ const docTemplate = `{
     }
 }`
 
-// SwaggerInfo holds exported Swagger Info so clients can modify it
+//nolint:gochecknoglobals // generated
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0.0",
 	Host:             "localhost:8080",
@@ -1022,6 +1022,7 @@ var SwaggerInfo = &swag.Spec{
 	RightDelim:       "}}",
 }
 
+//nolint:gochecknoinits // generated
 func init() {
 	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
 }
