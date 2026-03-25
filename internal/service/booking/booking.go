@@ -10,6 +10,7 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
+	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
 )
 
 type Repository interface {
@@ -152,6 +153,7 @@ func (s *Service) ListForUser(ctx context.Context) ([]*domain.Booking, error) {
 
 	filter := &dto.BookingFilter{
 		UserID: &creds.ID,
+		Time:   ptr.To(time.Now().UTC()),
 	}
 
 	bookings, err := s.repo.List(ctx, filter)
@@ -190,7 +192,7 @@ func (s *Service) Cancel(ctx context.Context, bookingID uuid.UUID) (*domain.Book
 	}
 
 	model := &dto.BookingUpdateModel{
-		ID:     booking.UserID(),
+		ID:     booking.ID(),
 		Status: domain.CancelledBookingStatus,
 	}
 

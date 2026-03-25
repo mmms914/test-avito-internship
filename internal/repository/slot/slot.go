@@ -125,8 +125,8 @@ func (r *Repository) GetAllAvailable(ctx context.Context, filter *dto.SlotFilter
 	return slots, nil
 }
 
-func (r *Repository) IsSlotsExistForDate(ctx context.Context, date time.Time) (bool, error) {
-	startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+func (r *Repository) IsSlotsExist(ctx context.Context, f *dto.SlotFilter) (bool, error) {
+	startOfDay := time.Date(f.Date.Year(), f.Date.Month(), f.Date.Day(), 0, 0, 0, 0, time.UTC)
 	endOfDay := startOfDay.AddDate(0, 0, 1)
 
 	query := `
@@ -134,11 +134,12 @@ func (r *Repository) IsSlotsExistForDate(ctx context.Context, date time.Time) (b
             SELECT 1 FROM slots 
             WHERE start_time >= $1 
               AND start_time < $2
+              AND room_id = $3
         )
     `
 
 	var exists bool
-	err := r.db.QueryRowContext(ctx, query, startOfDay, endOfDay).Scan(&exists)
+	err := r.db.QueryRowContext(ctx, query, startOfDay, endOfDay, f.RoomID).Scan(&exists)
 	if err != nil {
 		return false, fmt.Errorf("failed to check slots existence: %w", err)
 	}

@@ -3,8 +3,6 @@ package slot
 import (
 	"context"
 	"fmt"
-	"slices"
-	"time"
 
 	"github.com/google/uuid"
 
@@ -16,7 +14,7 @@ import (
 type Repository interface {
 	GetAllAvailable(ctx context.Context, f *dto.SlotFilter) ([]*domain.Slot, error)
 	Create(ctx context.Context, slot []*domain.Slot) error
-	IsSlotsExistForDate(ctx context.Context, date time.Time) (bool, error)
+	IsSlotsExist(ctx context.Context, f *dto.SlotFilter) (bool, error)
 }
 
 type ScheduleRepository interface {
@@ -47,8 +45,8 @@ func NewService(c *Config) *Service {
 	}
 }
 
-func (s *Service) GetAvailableSlots(ctx context.Context, roomID uuid.UUID, date time.Time) ([]*domain.Slot, error) {
-	roomExists, err := s.roomRepo.Exists(ctx, roomID)
+func (s *Service) GetAvailableSlots(ctx context.Context, filter *dto.SlotFilter) ([]*domain.Slot, error) {
+	roomExists, err := s.roomRepo.Exists(ctx, filter.RoomID)
 	if err != nil {
 		return nil, fmt.Errorf("checking if room exists: %w", err)
 	}
@@ -57,28 +55,23 @@ func (s *Service) GetAvailableSlots(ctx context.Context, roomID uuid.UUID, date 
 		return nil, errs.ErrRoomNotExists
 	}
 
-	slotsExist, err := s.repo.IsSlotsExistForDate(ctx, date)
+	slotsExist, err := s.repo.IsSlotsExist(ctx, filter)
 	if err != nil {
 		return nil, fmt.Errorf("checking if slots exist: %w", err)
 	}
 
 	if !slotsExist {
-		schedule, creationErr := s.scheduleRepo.GetForRoom(ctx, roomID)
-		if creationErr != nil {
-			return nil, fmt.Errorf("getting schedule: %w", creationErr)
+		schedule, schErr := s.scheduleRepo.GetForRoom(ctx, filter.RoomID)
+		if schErr != nil {
+			return nil, fmt.Errorf("getting schedule: %w", schErr)
 		}
 
-		if slices.Contains(schedule.DaysOfWeek(), date.Weekday()) {
-			newSlots := domain.GenerateSlots(schedule, date)
+		if schedule.IsAppliedForDate(filter.Date) {
+			newSlots := domain.GenerateSlots(schedule, filter.Date)
 			if createErr := s.repo.Create(ctx, newSlots); createErr != nil {
 				return nil, fmt.Errorf("creating slots: %w", createErr)
 			}
 		}
-	}
-
-	filter := &dto.SlotFilter{
-		RoomID: roomID,
-		Date:   date,
 	}
 
 	slots, err := s.repo.GetAllAvailable(ctx, filter)

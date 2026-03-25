@@ -11,9 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/slot"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/slot/mocks"
+	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/service/slot/mocks"
 )
 
 var errInternal = errors.New("internal error")
@@ -70,7 +71,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(false, errInternal).
 					Once()
 			},
@@ -85,7 +86,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(false, nil).
 					Once()
 				m.scheduleRepo.
@@ -104,7 +105,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(false, nil).
 					Once()
 				m.scheduleRepo.
@@ -134,7 +135,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(false, nil).
 					Once()
 				m.scheduleRepo.
@@ -164,7 +165,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(false, nil).
 					Once()
 				m.scheduleRepo.
@@ -198,7 +199,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(true, nil).
 					Once()
 				m.repo.
@@ -217,7 +218,7 @@ func TestService_GetAvailableSlots(t *testing.T) {
 					Return(true, nil).
 					Once()
 				m.repo.
-					On("IsSlotsExistForDate", mock.Anything, mock.AnythingOfType("time.Time")).
+					On("IsSlotsExist", mock.Anything, mock.AnythingOfType("*dto.SlotFilter")).
 					Return(true, nil).
 					Once()
 				m.repo.
@@ -243,7 +244,10 @@ func TestService_GetAvailableSlots(t *testing.T) {
 				SlotRepo:     m.repo,
 			})
 
-			_, err := s.GetAvailableSlots(context.Background(), test.roomID, test.date)
+			_, err := s.GetAvailableSlots(context.Background(), &dto.SlotFilter{
+				RoomID: test.roomID,
+				Date:   test.date,
+			})
 
 			if test.expectedError != nil {
 				require.ErrorIs(t, err, test.expectedError)

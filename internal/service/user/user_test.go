@@ -14,7 +14,7 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/user"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/user/mocks"
+	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/service/user/mocks"
 )
 
 var errInternal = errors.New("internal error")

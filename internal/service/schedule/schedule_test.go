@@ -13,7 +13,7 @@ import (
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
 	"github.com/avito-internships/test-backend-1-mmms914/internal/service/schedule"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/schedule/mocks"
+	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/service/schedule/mocks"
 )
 
 var errInternal = errors.New("internal error")

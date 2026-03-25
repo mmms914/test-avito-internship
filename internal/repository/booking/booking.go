@@ -104,6 +104,12 @@ func (r *Repository) List(ctx context.Context, filter *dto.BookingFilter) ([]*do
 		argIndex++
 	}
 
+	if filter.Time != nil {
+		query += fmt.Sprintf(" AND start_time >= $%d", argIndex)
+		args = append(args, *filter.Time)
+		argIndex++
+	}
+
 	// Сортировка и пагинация
 	query += " ORDER BY created_at DESC"
 

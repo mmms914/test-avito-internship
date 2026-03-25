@@ -80,6 +80,7 @@ func (s *Slot) IsInPast() bool {
 
 func GenerateSlots(schedule *Schedule, date time.Time) []*Slot {
 	slots := make([]*Slot, 0)
+	date = date.UTC()
 
 	if slices.Contains(schedule.DaysOfWeek(), date.Weekday()) {
 		beginTime := date.UTC().Truncate(DayDuration).Add(schedule.startTime)

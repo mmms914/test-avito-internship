@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
@@ -8,6 +10,7 @@ import (
 
 type BookingFilter struct {
 	UserID   *uuid.UUID
+	Time     *time.Time
 	Page     *int
 	PageSize *int
 }

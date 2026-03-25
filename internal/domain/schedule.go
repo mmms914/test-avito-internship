@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
@@ -75,4 +76,8 @@ func (s *Schedule) StartTime() time.Duration {
 }
 func (s *Schedule) EndTime() time.Duration {
 	return s.endTime
+}
+
+func (s *Schedule) IsAppliedForDate(date time.Time) bool {
+	return slices.Contains(s.DaysOfWeek(), date.Weekday())
 }
