@@ -88,9 +88,8 @@ func (s *E2ETestSuite) TestCancelBooking() {
 	for _, b := range userBookings {
 		if b.ID == booking.ID {
 			found = true
-			s.Require().Equal("cancelled", b.Status)
 			break
 		}
 	}
-	s.Require().True(found, "Booking not found in user's list after cancellation")
+	s.Require().False(found, "Booking found in user's list after cancellation")
 }

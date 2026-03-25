@@ -57,11 +57,13 @@ func (s *E2ETestSuite) createRoom() *Room {
 	s.checkStatus(resp, http.StatusCreated)
 	s.Require().Equal(http.StatusCreated, resp.StatusCode)
 
-	var result Room
+	var result struct {
+		Room Room `json:"room"`
+	}
 	err := json.NewDecoder(resp.Body).Decode(&result)
 	s.Require().NoError(err)
 
-	return &result
+	return &result.Room
 }
 
 func (s *E2ETestSuite) createSchedule(roomID string) *Schedule {
@@ -77,11 +79,13 @@ func (s *E2ETestSuite) createSchedule(roomID string) *Schedule {
 	s.checkStatus(resp, http.StatusCreated)
 	s.Require().Equal(http.StatusCreated, resp.StatusCode)
 
-	var result Schedule
+	var result struct {
+		Schedule Schedule `json:"schedule"`
+	}
 	err := json.NewDecoder(resp.Body).Decode(&result)
 	s.Require().NoError(err)
 
-	return &result
+	return &result.Schedule
 }
 
 func (s *E2ETestSuite) getAvailableSlots(roomID, date string) []Slot {
