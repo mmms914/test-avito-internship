@@ -1,17 +1,17 @@
-version: '3.8'
-
 services:
   postgres_test:
     image: postgres:16-alpine
     container_name: booking-postgres-e2e
+    env_file:
+      - .env.example
     environment:
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
-      POSTGRES_DB: test_db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5433:5433"
+      - "${DB_PORT}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -23,21 +23,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: booking-app-e2e
-    environment:
-      DB_HOST: postgres_test
-      DB_PORT: 5432
-      DB_USER: test_user
-      DB_PASSWORD: test_password
-      DB_NAME: test_db
-      DB_SSL_MODE: disable
-
-      JWT_SECRET: e2e-test-secret-key
-      JWT_EXPIRATION_HOURS: 24
-
-      SERVER_PORT: 8081
-
+    env_file:
+      - .env.example
     ports:
-      - "8081:8081"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
       postgres_test:
         condition: service_healthy

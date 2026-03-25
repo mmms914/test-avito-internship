@@ -1,3 +1,6 @@
+//go:build e2e
+// +build e2e
+
 package e2e
 
 import (
@@ -29,7 +32,7 @@ func (s *E2ETestSuite) checkStatus(resp *http.Response, expected int) {
 		var errResp map[string]interface{}
 		if json.Unmarshal(body, &errResp) == nil {
 			if errDetail, ok := errResp["error"]; ok {
-				s.T().Logf("🔍 Error details: %v", errDetail)
+				s.T().Logf("Error details: %v", errDetail)
 			}
 		}
 	}

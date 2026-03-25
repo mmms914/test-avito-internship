@@ -1,3 +1,6 @@
+//go:build e2e
+// +build e2e
+
 package e2e
 
 import (
@@ -14,7 +17,7 @@ func (s *E2ETestSuite) TestCreateBooking() {
 	s.Require().NotNil(schedule)
 
 	// 3. Получаем доступные слоты (user)
-	date := time.Date(2026, 25, 3, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
+	date := time.Now().UTC().AddDate(0, 0, 1).Format("2006-01-02")
 	slots := s.getAvailableSlots(room.ID, date)
 	s.Require().NotEmpty(slots, "No slots available")
 
@@ -42,7 +45,6 @@ func (s *E2ETestSuite) TestCreateBooking() {
 	s.Require().True(found, "Booking not found in user's list")
 }
 
-// TestCancelBooking тест на отмену брони
 func (s *E2ETestSuite) TestCancelBooking() {
 	// 1. Создаем переговорку и расписание
 	room := s.createRoom()
@@ -52,7 +54,7 @@ func (s *E2ETestSuite) TestCancelBooking() {
 	s.Require().NotNil(schedule)
 
 	// 2. Получаем слоты и создаем бронь
-	date := time.Date(2026, 25, 3, 0, 0, 0, 0, time.UTC).Format("2006-01-02")
+	date := time.Now().UTC().AddDate(0, 0, 1).Format("2006-01-02")
 	slots := s.getAvailableSlots(room.ID, date)
 	s.Require().NotEmpty(slots, "No slots available")
 
