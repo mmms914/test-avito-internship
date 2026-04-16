@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/service/schedule"
-	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/service/schedule/mocks"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/service/schedule"
+	mocks "github.com/mmms914/test-avito-internship/internal/service/schedule/mocks"
 )
 
 var errInternal = errors.New("internal error")

@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func TestUser_GetCredentialsFromContext(t *testing.T) {

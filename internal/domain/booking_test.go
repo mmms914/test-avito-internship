@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func TestNewBooking_WithInitSpecs(t *testing.T) {

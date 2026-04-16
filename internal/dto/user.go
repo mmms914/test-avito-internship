@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+import "github.com/mmms914/test-avito-internship/internal/domain"
 
 type UserCreateModel struct {
 	Email    string

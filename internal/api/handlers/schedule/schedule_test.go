@@ -17,12 +17,12 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/schedule"
-	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/schedule/mocks"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/schedule"
+	mocks "github.com/mmms914/test-avito-internship/internal/api/handlers/schedule/mocks"
+	"github.com/mmms914/test-avito-internship/internal/api/models"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/errs"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func TestHandler_Create(t *testing.T) {

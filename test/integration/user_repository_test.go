@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/errs"
 )
 
 func (s *IntegrationTestSuite) TestUserRepository_Create() {

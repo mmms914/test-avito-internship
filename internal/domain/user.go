@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/errs"
 )
 
 type User struct {

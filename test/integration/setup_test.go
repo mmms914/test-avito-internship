@@ -11,11 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/booking"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/room"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/schedule"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/slot"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/user"
+	"github.com/mmms914/test-avito-internship/internal/repository/booking"
+	"github.com/mmms914/test-avito-internship/internal/repository/room"
+	"github.com/mmms914/test-avito-internship/internal/repository/schedule"
+	"github.com/mmms914/test-avito-internship/internal/repository/slot"
+	"github.com/mmms914/test-avito-internship/internal/repository/user"
 )
 
 type IntegrationTestSuite struct {

@@ -10,11 +10,11 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/auth"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/infra/postgres"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/converter"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	"github.com/mmms914/test-avito-internship/internal/api/auth"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/infra/postgres"
+	"github.com/mmms914/test-avito-internship/internal/repository/converter"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func main() {

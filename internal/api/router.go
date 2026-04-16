@@ -8,12 +8,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/auth"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/booking"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/room"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/schedule"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/slot"
-	appmiddleware "github.com/avito-internships/test-backend-1-mmms914/internal/api/middleware"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/auth"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/booking"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/room"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/schedule"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/slot"
+	appmiddleware "github.com/mmms914/test-avito-internship/internal/api/middleware"
 )
 
 type Router struct {

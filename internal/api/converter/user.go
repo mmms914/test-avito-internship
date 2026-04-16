@@ -3,8 +3,8 @@ package converter
 import (
 	"errors"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/api/models"
+	"github.com/mmms914/test-avito-internship/internal/domain"
 )
 
 func UserRoleFromString(strRole string) (domain.Role, error) {

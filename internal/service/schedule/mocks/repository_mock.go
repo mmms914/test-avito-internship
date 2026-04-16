@@ -5,7 +5,7 @@ package mocks_test
 import (
 	context "context"
 
-	domain "github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	domain "github.com/mmms914/test-avito-internship/internal/domain"
 	mock "github.com/stretchr/testify/mock"
 
 	uuid "github.com/google/uuid"

@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/domain"
 )
 
 func TestNewRoom_WithInitSpecs(t *testing.T) {

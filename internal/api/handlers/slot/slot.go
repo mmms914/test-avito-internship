@@ -9,12 +9,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/api/converter"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers"
+	"github.com/mmms914/test-avito-internship/internal/api/models"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/dto"
+	"github.com/mmms914/test-avito-internship/internal/errs"
 )
 
 type Service interface {

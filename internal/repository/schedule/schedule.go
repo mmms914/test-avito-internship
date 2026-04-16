@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/repository/converter"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/repository/converter"
 )
 
 type Executor interface {

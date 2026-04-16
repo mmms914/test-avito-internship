@@ -5,8 +5,8 @@ package mocks_test
 import (
 	context "context"
 
-	domain "github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	dto "github.com/avito-internships/test-backend-1-mmms914/internal/dto"
+	domain "github.com/mmms914/test-avito-internship/internal/domain"
+	dto "github.com/mmms914/test-avito-internship/internal/dto"
 
 	mock "github.com/stretchr/testify/mock"
 )

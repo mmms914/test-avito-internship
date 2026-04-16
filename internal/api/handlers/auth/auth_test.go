@@ -14,14 +14,14 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	authApi "github.com/avito-internships/test-backend-1-mmms914/internal/api/auth"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/auth"
-	mocks "github.com/avito-internships/test-backend-1-mmms914/internal/api/handlers/auth/mocks"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/models"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	authApi "github.com/mmms914/test-avito-internship/internal/api/auth"
+	"github.com/mmms914/test-avito-internship/internal/api/handlers/auth"
+	mocks "github.com/mmms914/test-avito-internship/internal/api/handlers/auth/mocks"
+	"github.com/mmms914/test-avito-internship/internal/api/models"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/dto"
+	"github.com/mmms914/test-avito-internship/internal/errs"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func TestHandler_DummyLogin(t *testing.T) {

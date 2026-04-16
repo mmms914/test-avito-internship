@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
-	"github.com/avito-internships/test-backend-1-mmms914/pkg/ptr"
+	"github.com/mmms914/test-avito-internship/internal/api/converter"
+	"github.com/mmms914/test-avito-internship/pkg/ptr"
 )
 
 func TestStringHourMinuteToTime(t *testing.T) {

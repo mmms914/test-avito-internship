@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/api/converter"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/api/converter"
+	"github.com/mmms914/test-avito-internship/internal/domain"
 )
 
 func TestScheduleToObject(t *testing.T) {

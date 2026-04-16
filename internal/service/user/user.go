@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/avito-internships/test-backend-1-mmms914/internal/domain"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/dto"
-	"github.com/avito-internships/test-backend-1-mmms914/internal/errs"
+	"github.com/mmms914/test-avito-internship/internal/domain"
+	"github.com/mmms914/test-avito-internship/internal/dto"
+	"github.com/mmms914/test-avito-internship/internal/errs"
 )
 
 type Repository interface {

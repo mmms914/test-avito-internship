@@ -1,4 +1,4 @@
-module github.com/avito-internships/test-backend-1-mmms914
+module github.com/mmms914/test-avito-internship
 
 go 1.25.0
 
