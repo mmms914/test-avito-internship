@@ -85,6 +85,7 @@ func (h *Handler) DummyLogin(w http.ResponseWriter, r *http.Request) {
 		userID = auth.DefaultUserUID
 	default:
 		handlers.WriteError(w, models.InvalidRequestErrorCode, "invalid role", http.StatusBadRequest)
+		return
 	}
 
 	token, err := auth.GenerateToken(userID, *req.Role, h.jwtSecret, h.expirationHours)
