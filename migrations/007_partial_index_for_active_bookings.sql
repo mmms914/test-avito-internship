@@ -1,0 +1,5 @@
+-- +goose Up
+CREATE UNIQUE INDEX ACTIVE_BOOKINGS_UNIQUE_SLOT_ID ON bookings (slot_id) WHERE status = 'active';
+
+-- +goose Down
+DROP INDEX ACTIVE_BOOKINGS_UNIQUE_SLOT_ID;
