@@ -48,7 +48,13 @@ func Auth(jwtSecret string) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), domain.UserIDKey, uuid.MustParse(claims.UserID))
+			userID, err := uuid.Parse(claims.UserID)
+			if err != nil {
+				writeUnauthorizedError(w, "invalid userID claim")
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), domain.UserIDKey, userID)
 			ctx = context.WithValue(ctx, domain.UserRoleKey, userRole)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
