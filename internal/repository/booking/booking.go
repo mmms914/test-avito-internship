@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/rgurov/pgerrors"
 
 	"github.com/mmms914/test-avito-internship/internal/domain"
 	"github.com/mmms914/test-avito-internship/internal/dto"
@@ -47,6 +48,7 @@ func (r *Repository) GetByID(ctx context.Context, bookingID uuid.UUID) (*domain.
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errs.ErrBookingNotFound
 	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to get booking by id: %w", err)
 	}
@@ -85,6 +87,10 @@ func (r *Repository) Create(ctx context.Context, booking *domain.Booking) error 
 		booking.ConferenceLink(),
 		booking.CreatedAt(),
 	)
+
+	if pgerrors.Is(err, pgerrors.UniqueViolation) {
+		return errs.ErrSlotAlreadyBooked
+	}
 
 	return err
 }
